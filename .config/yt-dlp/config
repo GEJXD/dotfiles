@@ -13,6 +13,6 @@
 
 --paths ~/dls/
 
---output "%(title).80s.%(ext)s"
+--output "%(title).200B.%(ext)s"
 
 --concurrent-fragments 3
