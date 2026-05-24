@@ -25,6 +25,8 @@ package-list
 !etc/
 !etc/firejail/
 !etc/firejail/*
+!etc/fwupd/
+!etc/fwupd/fwupd.conf
 !etc/libvirt/
 !etc/libvirt/network.conf
 !etc/mkinitcpio.conf
