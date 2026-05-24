@@ -162,6 +162,7 @@ add_base() {
     pkg="$pkg base"
     pkg="$pkg base-devel"
     pkg="$pkg linux-firmware"
+    pkg="$pkg fwupd"
     pkg="$pkg lvm2"
     pkg="$pkg vim"
     pkg="$pkg networkmanager"
