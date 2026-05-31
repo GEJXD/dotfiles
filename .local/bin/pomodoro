@@ -51,9 +51,9 @@ start() {
 
     while [ $(($(date +%s) - start_time)) -lt $work_seconds ]; do
         elapsed_minute=$(( ($(date +%s) - $start_time) / 60 ))
-        echo "${elapsed_minute} of $work_minute minutes passed"
+        printf "\r${elapsed_minute} of $work_minute minutes passed"
         sleep 60
-    done
+    done && printf "\n"
 
     echo "$work_minute minutes passed, take a ${break_minute} minute break!"
     notify "$work_minute minutes passed,\n take a ${break_minute} minute break!"
