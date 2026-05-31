@@ -289,6 +289,17 @@
     },
 
 
+    // # select Quick Open / Command Palette suggestion
+    {
+        "key": "ctrl+n",
+        "command": "workbench.action.quickOpenSelectNext",
+        "when": "inQuickOpen"
+    },
+    {
+        "key": "ctrl+p",
+        "command": "workbench.action.quickOpenSelectPrevious",
+        "when": "inQuickOpen"
+    },
 	// # select code suggestion
     {
         "key": "ctrl+n",
