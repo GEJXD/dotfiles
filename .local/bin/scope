@@ -29,9 +29,9 @@ case "$(file -Lb --mime-type -- "$1")" in
     image/*xcf|image/heic|image/x-xpixmap)
         # create a cache for every file, if 2 files have the same
         # size+name+last_modified_date, it has the same hash
-        # `shasum` is faster than other `sha*sum`
+        # xxhsum is faster than cryptographic hash algorithm like md5sum/shasum
         CACHE="$HOME/.cache/lf/$(stat --printf '%s%n%Y' "$(readlink -f "$1")" \
-                               | shasum | cut -d' ' -f1)"
+                               | xxh3sum | cut -d' ' -f1)"
         [ -f "${CACHE}.jpg" ] || convert "$1" -flatten \
                                               -quality 50 "${CACHE}.jpg"
         show_img "${CACHE}.jpg" "$2" "$3"
@@ -41,7 +41,7 @@ case "$(file -Lb --mime-type -- "$1")" in
         ;;
     video/*)
         CACHE="$HOME/.cache/lf/$(stat --printf '%s%n%Y' "$(readlink -f "$1")" \
-                               | shasum | cut -d' ' -f1)"
+                               | xxh3sum | cut -d' ' -f1)"
         [ -f "${CACHE}.jpg" ] \
             || /usr/bin/ffmpegthumbnailer -i "$1" -s 480 -q 5 -o "${CACHE}.jpg"
         show_img "${CACHE}.jpg" "$2" "$3"
@@ -51,21 +51,21 @@ case "$(file -Lb --mime-type -- "$1")" in
         ;;
     font/ttf)
         CACHE="$HOME/.cache/lf/$(stat --printf '%s%n%Y' "$(readlink -f "$1")" \
-                               | shasum | cut -d' ' -f1)"
+                               | xxh3sum | cut -d' ' -f1)"
         [ -f "${CACHE}.jpg" ] \
             || /usr/bin/convert -background none -fill white "$1" "${CACHE}.jpg"
         show_img "${CACHE}.jpg" "$2" "$3"
         ;;
     application/epub+zip)
         CACHE="$HOME/.cache/lf/$(stat --printf '%s%n%Y' "$(readlink -f "$1")" \
-                               | shasum | cut -d' ' -f1)"
+                               | xxh3sum | cut -d' ' -f1)"
         [ -f "${CACHE}.png" ] \
             || /usr/bin/gnome-epub-thumbnailer "$1" "$CACHE".png
         show_img "$CACHE".png "$2" "$3"
         ;;
     application/pdf)
         CACHE="$HOME/.cache/lf/$(stat --printf '%s%n%Y' "$(readlink -f "$1")" \
-                               | shasum | cut -d' ' -f1)"
+                               | xxh3sum | cut -d' ' -f1)"
         # `pdftoppm` already adds `.jpg` extension, don't duplicate
         [ -f "${CACHE}.jpg" ] \
             || /usr/bin/pdftoppm -f 1 -l 1 -singlefile -jpeg "$1" "$CACHE"
