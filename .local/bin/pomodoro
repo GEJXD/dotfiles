@@ -1,47 +1,72 @@
 #!/usr/bin/sh
 # @author nate zhou
-# @since 2023,2025
+# @since 2023,2025,2026
+# pomodoro - cli pomodoro with a fixed Work : Break = 5 : 1
 
-# cli pomodoro using sleep and echo command
-# syntax: pomodoro 25
-# sleep 25 minutes, then show message to take 5 minutes break
+start_time="$(date +%s)"
+work_minute="$1"
+break_minute=0
 
-if [ $# -eq 0 ]; then
-    echo "Usage: $(basename "$0") <minutes>"
-  exit 1;
+usage() {
+    cat <<_EOF_
+Usage
+        $(basename "$0") MINUTES
+        Work : Break = 5 : 1
+Example
+        $(basename "$0") 25
+        Work for 25 minutes, then notify to take a 5 minute break
+_EOF_
+    exit 1;
+}
+
+notify() {
+    msg="$1"
+
+    [ "$XDG_SESSION_TYPE" != "tty" ]\
+        && notify-send -u critical -t 0 -r 2002 "$(basename $0)" "$msg"
+}
+
+abort() {
+    msg="$1"
+
+    RED='\033[0;31m'
+    RESET='\033[0m'
+
+    printf "${RED}%s${RESET}\n" "$msg" >&2
+
+    notify "$msg"
+    exit 1
+}
+
+ceiling() {
+    # ceiling to nearest 5
+    echo $(( ( ($1 + 4) / 5 ) * 5  ))
+}
+
+calc_break() {
+    work_seconds=$(( work_minute * 60 ))
+    break_minute=$(ceiling $(( work_minute / 5 )) )
+
+    echo "Work = ${work_minute}min, Break = ${break_minute}min"
+
+    while [ $(($(date +%s) - start_time)) -lt $work_seconds ]; do
+        time_elapsed=$(( ($(date +%s) - $start_time) / 60 ))
+        echo "${time_elapsed} of $work_minute minutes passed"
+        sleep 60
+    done
+
+    echo "$work_minute minutes passed, take a ${break_minute} minute break!"
+    notify "$work_minute minutes passed,\n take a ${break_minute} minute break!"
+}
+
+if [ -z "$1" ]; then
+    usage
+elif [ "$#" -ne 1 ]; then
+    abort "too many arguments"
+else
+    if case "$1" in *[!0-9]*|0) true ;; *) false ;; esac; then
+        abort "argument must be a positive integer"
+    else
+        calc_break
+    fi
 fi
-
-# check if input is divisible by 5
-if [ $(( $1 % 5 )) -ne 0 ]; then
-  echo "Input must be divisible by 5"
-  exit 1;
-fi
-
-# get start time
-start_time=$(date +%s)
-
-# calculate seconds to sleep
-seconds=$(( $1 * 60 ))
-
-break_time=$(( $1 / 5 ))
-
-# loop until time is up
-while [ $(($(date +%s) - $start_time)) -lt $seconds ]
-do
-  # calculate time elapsed
-  time_elapsed=$(( ($(date +%s) - $start_time) / 60 ))
-
-  # display message with current time elapsed
-  echo "${time_elapsed} of ${1} minutes passed"
-
-  # sleep for 1 second before checking again
-  sleep 60
-done
-
-# display final message when time is up
-echo "${1} minutes passed, take a ${break_time} minute break!"
-
-# send notification in X
-notify-send -u critical -t 0 -r 2002 \
-    "$(basename $0)" \
-    "${1} minutes passed,\n take a ${break_time} minute break!"
