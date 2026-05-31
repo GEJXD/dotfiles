@@ -43,15 +43,15 @@ ceiling() {
     echo $(( ( ($1 + 4) / 5 ) * 5  ))
 }
 
-calc_break() {
+start() {
     work_seconds=$(( work_minute * 60 ))
     break_minute=$(ceiling $(( work_minute / 5 )) )
 
     echo "Work = ${work_minute}min, Break = ${break_minute}min"
 
     while [ $(($(date +%s) - start_time)) -lt $work_seconds ]; do
-        time_elapsed=$(( ($(date +%s) - $start_time) / 60 ))
-        echo "${time_elapsed} of $work_minute minutes passed"
+        elapsed_minute=$(( ($(date +%s) - $start_time) / 60 ))
+        echo "${elapsed_minute} of $work_minute minutes passed"
         sleep 60
     done
 
@@ -67,6 +67,6 @@ else
     if case "$1" in *[!0-9]*|0) true ;; *) false ;; esac; then
         abort "argument must be a positive integer"
     else
-        calc_break
+        start
     fi
 fi
