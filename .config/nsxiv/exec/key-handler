@@ -23,6 +23,13 @@ do
                 exit 1
             fi
             ;;
+        "r")
+            new_name="$(wmenu -p "["$(basename $0)"] new name: " </dev/null)"
+            if [ -n "$new_name" ]; then
+                mv "$file" "$(dirname "$file")/${new_name}"
+                notify-send -t 1100 -u low -r 3301 "nsxiv"  "$file is renamed"
+            fi
+            ;;
         "y")
             cp "$file" ${HOME}/tmp/
             ;;
