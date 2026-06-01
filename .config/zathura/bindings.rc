@@ -1,10 +1,11 @@
 # vim:ft=zathurarc
 # zathura/bindings.rc
 # @author nate zhou
-# @since 2023,2024,2025
+# @since 2023,2024,2025,2026
 
 unmap a
 unmap s
+unmap <C-r>
 
 map I recolor
 map n scroll half-down
@@ -14,7 +15,7 @@ map i zoom in
 map o zoom out
 map b toggle_statusbar
 map r rotate rotate-cw
-map R rotate rotate-ccw
+map <C-r> rotate rotate-ccw
 
 map f follow
 
