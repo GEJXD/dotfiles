@@ -182,6 +182,7 @@ end)
 swayimg.slideshow.on_key("t", swayimg.slideshow.mark_image)
 
 swayimg.slideshow.on_key("Shift+d", functions.delete)
+swayimg.slideshow.on_key("Shift+r", functions.rename)
 swayimg.slideshow.on_key("Shift+s", functions.qrscan)
 swayimg.slideshow.on_key("Shift+w", functions.setwall)
 swayimg.slideshow.on_key("Shift+i", functions.invert)

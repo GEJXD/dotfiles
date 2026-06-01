@@ -24,6 +24,31 @@ function M.delete()
     end
 end
 
+function M.rename()
+    local image = swayimg.viewer.get_image()
+    if not image or not image.path then return end
+
+    local reply = os.tmpname()
+    os.execute(string.format("wmenu-color -p '[swayimg] New name: ' < /dev/null > %s", reply))
+
+    local f = io.open(reply, "r")
+    local new_name = f and f:read("*all"):gsub("\n$", "") or ""
+    if f then f:close() end
+    os.remove(reply)
+
+    if new_name ~= "" then
+        local dir = image.path:match("(.*/)") or "."
+        local new_path = dir .. new_name
+        local success = os.rename(image.path, new_path)
+        if success then
+            os.execute(string.format("notify-send -t 1100 -u low -r 3301 'swayimg' 'Renamed to %s'", new_name))
+            swayimg.viewer.reload()
+        else
+            os.execute(string.format("notify-send -t 1100 -u low -r 3301 'swayimg' 'Rename failed'"))
+        end
+    end
+end
+
 function M.qrscan()
     local image = swayimg.viewer.get_image()
     if not image or not image.path then return end

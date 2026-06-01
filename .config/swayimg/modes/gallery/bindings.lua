@@ -92,6 +92,7 @@ swayimg.gallery.on_key("a", toggle_antialiasing)
 swayimg.gallery.on_key("t", swayimg.gallery.mark_image)
 
 swayimg.gallery.on_key("Shift+d", functions.delete)
+swayimg.gallery.on_key("Shift+r", functions.rename)
 swayimg.gallery.on_key("Shift+s", functions.qrscan)
 swayimg.gallery.on_key("Shift+w", functions.setwall)
 swayimg.gallery.on_key("Shift+i", functions.invert)

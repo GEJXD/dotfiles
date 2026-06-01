@@ -172,6 +172,7 @@ end)
 swayimg.viewer.on_key("t", swayimg.viewer.mark_image)
 
 swayimg.viewer.on_key("Shift+d", functions.delete)
+swayimg.viewer.on_key("Shift+r", functions.rename)
 swayimg.viewer.on_key("Shift+s", functions.qrscan)
 swayimg.viewer.on_key("Shift+w", functions.setwall)
 swayimg.viewer.on_key("Shift+i", functions.invert)
