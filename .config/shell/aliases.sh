@@ -152,7 +152,7 @@ alias gS="${HOME}/.local/bin/gpg-sign"
 alias gV="gpg --verify"
 
 alias gu="printf '%-20s %s\n' 'user.name:' \"\$(git config user.name)\"; printf '%-20s %s\n' 'user.email:' \"\$(git config user.email)\"; printf '%-20s %s\n' 'user.signingkey:' \"\$(git config user.signingkey)\"; printf '%-20s %s\n' 'commit.gpgsign:' \"\$(git config commit.gpgsign)\""
-alias gs="git status -s 2>/dev/null"
+alias gss="git status -s 2>/dev/null"
 alias gb="git branch"
 alias gbv="git branch -vv"
 alias gr="git remote"
