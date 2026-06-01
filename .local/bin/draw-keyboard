@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+# @author nate zhou
+# @since 2026
+# @depends imagemagick, fontconfig
+# drawkeyboard - draw an empty keyboard template image
+# F1~F2 are excluded, CapsLock is replaced by Esc
+
+import sys
+import os
+import subprocess
+
+BG = "#1a1a1a"
+KEY_BG = "#2d2d2d"
+KEY_FG = "#e0e0e0"
+
+script_name = os.path.basename(__file__)
+
+if len(sys.argv) < 2:
+    print(f"Usage: {script_name} <output_filename>")
+    print(f"Example: {script_name} keyboard.png")
+    print()
+    print("Dependencies: imagemagick, fontconfig")
+    sys.exit(1)
+
+output_name = sys.argv[1]
+
+def get_system_mono():
+    try:
+        result = subprocess.run(
+            ["fc-match", "-f", "%{file}", "monospace"],
+            capture_output=True, text=True
+        )
+        path = result.stdout.strip()
+        if path:
+            return path
+    except:
+        pass
+    return None
+
+font = get_system_mono()
+
+row1 = ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace"]
+row2 = ["Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "\\"]
+row3 = ["Esc", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "Enter"]
+row4 = ["Shift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "Shift"]
+row5 = ["Ctrl", "Super", "Alt", "Space", "Alt", "Super", "Ctrl"]
+
+GAP = 6
+UNIT = 112
+TOTAL_W = int(15 * UNIT + 14 * GAP)
+
+KEY_H = UNIT
+ROW5_H = UNIT
+
+u1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+u2 = [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5]
+u3 = [1.75, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.25]
+u4 = [2.25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.75]
+
+mod_w = int(1.25 * UNIT)
+space_w = TOTAL_W - (mod_w * 6 + GAP * 6)
+
+row1_y = 0
+row2_y = row1_y + KEY_H + GAP
+row3_y = row2_y + KEY_H + GAP
+row4_y = row3_y + KEY_H + GAP
+row5_y = row4_y + KEY_H + GAP
+
+TOTAL_H = row5_y + ROW5_H
+
+def build_row(y, h, keys, units):
+    entries = []
+    x = 0
+    for k, u in zip(keys, units):
+        w = int(u * UNIT + (u - 1) * GAP)
+        entries.append((x, y, w, h, k))
+        x += w + GAP
+    return entries
+
+layout = []
+layout.extend(build_row(row1_y, KEY_H, row1, u1))
+layout.extend(build_row(row2_y, KEY_H, row2, u2))
+layout.extend(build_row(row3_y, KEY_H, row3, u3))
+layout.extend(build_row(row4_y, KEY_H, row4, u4))
+
+x = 0
+for k in row5:
+    w = space_w if k == "Space" else mod_w
+    layout.append((x, row5_y, w, ROW5_H, k))
+    x += w + GAP
+
+cmd = ["magick", "-size", f"{TOTAL_W}x{TOTAL_H}", f"xc:{BG}"]
+if font:
+    cmd.extend(["-font", font])
+
+for x, y, w, h, keyname in layout:
+    # ImageMagick draw needs \\\\ to render a single backslash
+    if keyname == "\\":
+        display = "\\\\\\\\"
+        quote_char = "'"
+    elif keyname == "'":
+        display = "'"
+        quote_char = '"'
+    elif keyname == "`":
+        display = "`"
+        quote_char = '"'
+    else:
+        display = keyname
+        quote_char = "'"
+
+    cmd.extend([
+        "-fill", KEY_BG,
+        "-draw", f"roundrectangle {x},{y} {x+w},{y+h} 6,6",
+        "-fill", KEY_FG,
+        "-pointsize", "28",
+        "-draw", f"text {x+8},{y+38} {quote_char}{display}{quote_char}",
+    ])
+
+cmd.append(output_name)
+print(f"Generating {output_name}...")
+subprocess.run(cmd)
+print(f"Done: {output_name}")
