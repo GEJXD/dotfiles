@@ -186,6 +186,7 @@ alias gls="git log --show-signature"
 alias gla="git log --graph --all --name-only --show-signature"
 alias gh="git log --graph --pretty=format:'%Cred%h%Creset%C(yellow)%d%Creset %s%Cgreen(%cr)' --abbrev-commit | /usr/bin/fzf --layout=reverse-list --preview-window=80%:bottom: --preview 'parse-fgl {}' | cut -d' ' -f2 | xargs -I{} git rev-parse {} | wl-copy"
 alias gcl="git clone"
+alias gnp="git -c http.proxy= -c https.proxy="
 
 alias zbr="zig build -Doptimize=ReleaseSafe"
 alias zbd="zig build -Doptimize=Debug"
