@@ -63,6 +63,7 @@ eclipse() {
 rotate() {
     gaze
     if [ $isDim -eq 0 ]; then
+        echo "unchanged"
         exit 0
     else
         local result="$(cat "$LUCIA_ROTATE_CONFIG" \
@@ -70,6 +71,7 @@ rotate() {
         if [ -n "$result" ]; then
             inflame
             echo "$result" > "$LUCIA_CONFIG"
+            echo "rotated"
         else
             abort "$LUCIA_ROTATE_COMMAND failed"
         fi
