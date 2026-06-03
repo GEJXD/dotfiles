@@ -43,6 +43,26 @@ ceiling() {
     echo $(( ( ($1 + 4) / 5 ) * 5  ))
 }
 
+draw_progress() {
+    elapsed=$1
+    total=$2
+    width=30
+
+    percent=$(( elapsed * 100 / total ))
+    filled=$(( elapsed * width / total ))
+
+    bar="["
+    for ((i=0; i<filled; i++)); do
+        bar+="+"
+    done
+    for ((i=filled; i<width; i++)); do
+        bar+="-"
+    done
+    bar+="]"
+
+    printf "\r%-${width}s %3d%% (%d/%d min)" "$bar" "$percent" "$elapsed" "$total"
+}
+
 start() {
     work_seconds=$(( work_minute * 60 ))
     break_minute=$(ceiling $(( work_minute / 5 )) )
@@ -50,13 +70,17 @@ start() {
     echo "Work = ${work_minute}min, Break = ${break_minute}min"
 
     while [ $(($(date +%s) - start_time)) -lt $work_seconds ]; do
-        elapsed_minute=$(( ($(date +%s) - $start_time) / 60 ))
-        printf "\r${elapsed_minute} of $work_minute minutes passed"
+        elapsed_seconds=$(( $(date +%s) - start_time ))
+        elapsed_minute=$(( elapsed_seconds / 60 ))
+        draw_progress $elapsed_minute $work_minute
         sleep 60
-    done && printf "\n"
+    done
 
-    echo "$work_minute minutes passed, take a ${break_minute} minute break!"
-    notify "$work_minute minutes passed,\n take a ${break_minute} minute break!"
+    draw_progress $work_minute $work_minute
+    printf "\n"
+
+    echo "$work_minute/$work_minute minutes passed, take a ${break_minute} minute break!"
+    notify "$work_minute/$work_minute minutes passed,\n take a ${break_minute} minute break!"
 }
 
 if [ -z "$1" ]; then
