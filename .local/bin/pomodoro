@@ -46,7 +46,7 @@ ceiling() {
 draw_progress() {
     elapsed=$1
     total=$2
-    width=30
+    width=50
 
     percent=$(( elapsed * 100 / total ))
     filled=$(( elapsed * width / total ))
