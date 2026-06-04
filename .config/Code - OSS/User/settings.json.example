@@ -29,6 +29,16 @@
     "vim.neovimUseConfigFile": true,
     "vim.useSystemClipboard": true,
     "vim.foldfix": true,
+    // fix `O` when open line above doesn't indent properly, see
+    // https://github.com/VSCodeVim/Vim/issues/7545#issuecomment-1707836927
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["O"],
+            "commands": ["editor.action.insertLineBefore"],
+            "after": ["i"]
+        }
+    ],
+
     "zoomer.zoomIncrement": 0.1,
 
     "explorer.confirmDelete": false,
