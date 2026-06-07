@@ -40,6 +40,7 @@ OPTIONS
         --mutt
         --kvm
         --bluetooth
+        --coc-java
         --all
 _EOF_
     exit 0
@@ -465,6 +466,14 @@ add_bluetooth() {
     pkg="$pkg bluez-utils"
 }
 
+add_coc_java() {
+    pkg="$pkg nodejs"
+    pkg="$pkg npm"
+    pkg="$pkg jdk21-openjdk"
+    pkg="$pkg openjdk21-doc"
+    pkg="$pkg openjdk21-src"
+}
+
 add_extra() {
     pkg="$pkg android-tools"
     pkg="$pkg android-file-transfer"
@@ -553,6 +562,9 @@ while [ -n "$1" ]; do
         --bluetooth)
             add_bluetooth
             ;;
+        --coc-java)
+            add_coc_java
+            ;;
         --all)
             add_base
             install_yay
@@ -569,6 +581,7 @@ while [ -n "$1" ]; do
             add_coding
             add_kvm
             add_bluetooth
+            add_coc_java
             add_extra
             ;;
     esac
