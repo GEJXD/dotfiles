@@ -54,6 +54,10 @@ map('n', '<C-w>y', ':vertical resize -2<CR>')
 map('n', '<C-w>u', ':resize +2<CR>')
 map('n', '<C-w>i', ':resize -2<CR>')
 map('n', '<C-w>o', ':vertical resize +2<CR>')
+map('t', '<C-w>y', '<C-\\><C-n>:vertical resize -2<CR>i')
+map('t', '<C-w>u', '<C-\\><C-n>:resize +2<CR>i')
+map('t', '<C-w>i', '<C-\\><C-n>:resize -2<CR>i')
+map('t', '<C-w>o', '<C-\\><C-n>:vertical resize +2<CR>i')
 
 -- tab
 map('n', '<leader>O', ':tabnew<CR>')
