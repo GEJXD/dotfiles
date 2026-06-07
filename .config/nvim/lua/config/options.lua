@@ -13,7 +13,7 @@ vim.o.ignorecase = true -- searching case insensitive
 vim.o.smartcase = true	-- except patterns contain uppercase
 
 -- visual
-vim.o.statusline = '%f %h%m%r%= %-16.(%) %c [%l/%L %P]'
+vim.o.statusline = '%f %h%m%r%{coc#status()}%{get(b:,"coc_current_function","")}%= %-16.(%) %c [%l/%L %P]'
 vim.o.laststatus = 2
 
 vim.o.number = true
