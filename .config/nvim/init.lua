@@ -5,6 +5,8 @@
 
 require('config.colors')
 require('config.options')
+require('config.functions')
+require('config.commands')
 require('config.autocmd')
 require('config.bindings')
 require('plugins.init')

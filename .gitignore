@@ -222,6 +222,8 @@ package-list
 !.config/nvim/lua/config/options.lua
 !.config/nvim/lua/config/autocmd.lua
 !.config/nvim/lua/config/bindings.lua
+!.config/nvim/lua/config/commands.lua
+!.config/nvim/lua/config/functions.lua
 !.config/nvim/lua/plugins/
 !.config/nvim/lua/plugins/init.lua
 !.config/nvim/lua/plugins/nvim-colorizer.lua
