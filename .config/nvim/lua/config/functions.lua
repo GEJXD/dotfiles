@@ -30,17 +30,17 @@ function M.toggle_terminal_split()
   end
 
   if #term_bufs > 0 then
-    vim.cmd('split')
+    vim.cmd('botright split')
     vim.api.nvim_win_set_buf(0, term_bufs[1])
     vim.cmd('startinsert')
   else
-    vim.cmd('split | terminal')
+    vim.cmd('botright split | terminal')
     vim.cmd('startinsert')
   end
 end
 
 function M.new_terminal_split()
-  vim.cmd('split | terminal')
+  vim.cmd('botright split | terminal')
   vim.cmd('startinsert')
 end
 
