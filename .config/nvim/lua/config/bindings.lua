@@ -14,8 +14,51 @@ map('t', '<leader><ESC>', '<C-\\><C-n>')
 map('t', '<leader>q', '<C-\\><C-n> | :quit!<CR>')
 map('t', '<C-q>', '<C-\\><C-n> | :quit!<CR>')
 
-map('n', '<leader><CR>', ':split | terminal<CR> | i', {  silent = true })
-map('n', '<C-CR>', ':split | terminal<CR> | i', {  silent = true })
+-- toggle terminal split
+vim.keymap.set('n', '<C-CR>', function()
+  local current_buf = vim.api.nvim_get_current_buf()
+
+  if vim.bo[current_buf].buftype == 'terminal' then
+    vim.cmd('hide')
+    return
+  end
+
+  local term_bufs = {}
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buftype == 'terminal' then
+      table.insert(term_bufs, buf)
+    end
+  end
+
+  for _, buf in ipairs(term_bufs) do
+    local win = vim.fn.bufwinid(buf)
+    if win ~= -1 then
+      vim.api.nvim_set_current_win(win)
+      vim.cmd('startinsert')
+      return
+    end
+  end
+
+  if #term_bufs > 0 then
+    vim.cmd('split')
+    vim.api.nvim_win_set_buf(0, term_bufs[1])
+    vim.cmd('startinsert')
+  else
+    vim.cmd('split | terminal')
+    vim.cmd('startinsert')
+  end
+end, { silent = true })
+
+-- new terminal split
+vim.keymap.set('n', '<C-S-CR>', function()
+  vim.cmd('split | terminal')
+  vim.cmd('startinsert')
+end, { silent = true })
+
+
+map('t', '<C-CR>', '<C-\\><C-n>:hide<CR>')
+
+map('t', '<C-S-CR>', '<C-\\><C-n>:split | terminal<CR>i')
 
 map('n', 'W', ':w |e<Left><Left>')
 map('n', '<leader>q', ':q<CR>')
