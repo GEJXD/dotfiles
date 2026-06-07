@@ -22,6 +22,7 @@ function! ToggleTerminalSplit()
     let win = bufwinid(buf)
     if win != -1
       call win_gotoid(win)
+      execute 'resize ' . (&lines / 3)
       startinsert
       return
     endif
@@ -29,14 +30,16 @@ function! ToggleTerminalSplit()
 
   if len(term_bufs) > 0
     execute 'botright sbuffer ' . term_bufs[0]
-    startinsert
   else
     botright terminal
-    startinsert
   endif
+
+  execute 'resize ' . (&lines / 3)
+  startinsert
 endfunction
 
 function! NewTerminalSplit()
   botright terminal
+  execute 'resize ' . (&lines / 3)
   startinsert
 endfunction
