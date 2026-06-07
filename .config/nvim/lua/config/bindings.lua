@@ -111,3 +111,16 @@ vim.keymap.set('i', '<C-k>', function()
     return '<Left>'
   end
 end, { expr = true, nowait = true, silent = true })
+
+-- coc Fix
+vim.keymap.set('n', '<C-b>f', '<Plug>(coc-codeaction-cursor)', { silent = true })
+vim.keymap.set('n', '<C-b>F', '<Plug>(coc-codeaction-line)', { silent = true })
+
+-- coc Hover
+vim.keymap.set('n', '<C-b>h', ':call CocActionAsync("doHover")<CR>', { silent = true })
+
+-- coc floating definition
+vim.keymap.set('n', '<C-b>d', '<Plug>(coc-definition)', { silent = true })
+
+-- coc open Reference file
+vim.keymap.set('n', '<C-b>r', '<Plug>(coc-references)', { silent = true })
