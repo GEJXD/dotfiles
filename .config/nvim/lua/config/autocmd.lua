@@ -96,3 +96,11 @@ vim.api.nvim_create_autocmd({'BufRead', 'BufNewFile'}, {
         vim.opt_local.filetype = 'sh'
     end,
 })
+
+-- auto-refresh statusline when coc status changes
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'CocStatusChange',
+  callback = function()
+    vim.cmd('redrawstatus')
+  end
+})
