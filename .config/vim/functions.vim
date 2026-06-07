@@ -28,16 +28,15 @@ function! ToggleTerminalSplit()
   endfor
 
   if len(term_bufs) > 0
-    execute 'sbuffer ' . term_bufs[0]
+    execute 'botright sbuffer ' . term_bufs[0]
     startinsert
   else
-    terminal
+    botright terminal
     startinsert
   endif
 endfunction
 
 function! NewTerminalSplit()
-  terminal
+  botright terminal
   startinsert
 endfunction
-
