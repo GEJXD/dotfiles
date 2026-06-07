@@ -49,6 +49,10 @@ nnoremap <C-w>y :vertical resize -2<CR>
 nnoremap <C-w>u :resize +2<CR>
 nnoremap <C-w>i :resize -2<CR>
 nnoremap <C-w>o :vertical resize +2<CR>
+tnoremap <C-w>y <C-\><C-n>:vertical resize -2<CR>i
+tnoremap <C-w>u <C-\><C-n>:resize +2<CR>i
+tnoremap <C-w>i <C-\><C-n>:resize -2<CR>i
+tnoremap <C-w>o <C-\><C-n>:vertical resize +2<CR>i
 
 " tab
 nnoremap <leader>O :tabnew<CR>
