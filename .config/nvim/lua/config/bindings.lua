@@ -128,3 +128,6 @@ vim.keymap.set('n', '<C-b>d', '<Plug>(coc-definition)', { silent = true })
 
 -- coc open Reference file
 vim.keymap.set('n', '<C-b>r', '<Plug>(coc-references)', { silent = true })
+
+-- coc format document
+vim.keymap.set('n', '<C-S-l>', ':call CocAction("format")<CR>')
