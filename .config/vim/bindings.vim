@@ -9,50 +9,10 @@ tnoremap <leader><ESC> <C-\><C-n>
 tnoremap <leader>q <C-\><C-n>:quit!<CR>
 tnoremap <C-q> <C-\><C-n>:quit!<CR>
 
-" toggle terminal split
 nnoremap <silent> <C-CR> :call ToggleTerminalSplit()<CR>
 tnoremap <silent> <C-CR> <C-\><C-n>:call ToggleTerminalSplit()<CR>
 
-function! ToggleTerminalSplit()
-  let current_buf = bufnr('%')
-
-  if getbufvar(current_buf, '&buftype') == 'terminal'
-    hide
-    return
-  endif
-
-  let term_bufs = []
-  for buf in getbufinfo({'buflisted': 1})
-    if getbufvar(buf.bufnr, '&buftype') == 'terminal'
-      call add(term_bufs, buf.bufnr)
-    endif
-  endfor
-
-  for buf in term_bufs
-    let win = bufwinid(buf)
-    if win != -1
-      call win_gotoid(win)
-      startinsert
-      return
-    endif
-  endfor
-
-  if len(term_bufs) > 0
-    execute 'sbuffer ' . term_bufs[0]
-    startinsert
-  else
-    terminal
-    startinsert
-  endif
-endfunction
-
-" new terminal split
 nnoremap <silent> <C-S-CR> :call NewTerminalSplit()<CR>
-
-function! NewTerminalSplit()
-  terminal
-  startinsert
-endfunction
 
 nnoremap W :w \|e<Left><Left>
 nnoremap <leader>q :q<CR>

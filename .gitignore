@@ -320,6 +320,7 @@ package-list
 !.config/vim/vimrc
 !.config/vim/autocmd.vim
 !.config/vim/bindings.vim
+!.config/vim/functions.vim
 !.config/wget/
 !.config/wget/wgetrc
 !.config/wob/
