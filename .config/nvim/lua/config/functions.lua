@@ -29,18 +29,21 @@ function M.toggle_terminal_split()
     end
   end
 
+  local height = math.floor(vim.o.lines / 3)
+
   if #term_bufs > 0 then
-    vim.cmd('botright split')
+    vim.cmd('botright ' .. height .. 'split')
     vim.api.nvim_win_set_buf(0, term_bufs[1])
     vim.cmd('startinsert')
   else
-    vim.cmd('botright split | terminal')
+    vim.cmd('botright ' .. height .. 'split | terminal')
     vim.cmd('startinsert')
   end
 end
 
 function M.new_terminal_split()
-  vim.cmd('botright split | terminal')
+  local height = math.floor(vim.o.lines / 3)
+  vim.cmd('botright ' .. height .. 'split | terminal')
   vim.cmd('startinsert')
 end
 
