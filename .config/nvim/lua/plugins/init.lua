@@ -34,6 +34,7 @@ Plug('3rd/image.nvim')
 
 vim.call('plug#end')
 
+require('plugins.coc')
 require('plugins.nvim-colorizer')
 require('plugins.nvim-treesitter')
 require('plugins.nvim-treesitter-context')

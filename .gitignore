@@ -226,6 +226,7 @@ package-list
 !.config/nvim/lua/config/functions.lua
 !.config/nvim/lua/plugins/
 !.config/nvim/lua/plugins/init.lua
+!.config/nvim/lua/plugins/coc.lua
 !.config/nvim/lua/plugins/nvim-colorizer.lua
 !.config/nvim/lua/plugins/nvim-treesitter.lua
 !.config/nvim/lua/plugins/nvim-treesitter-context.lua
