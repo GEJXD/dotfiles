@@ -8,6 +8,7 @@ let mapleader=" "   " set space as leader key
 tnoremap <leader><ESC> <C-\><C-n>
 tnoremap <leader>q <C-\><C-n>:quit!<CR>
 tnoremap <C-q> <C-\><C-n>:quit!<CR>
+tnoremap <C-k> <C-\><C-n>:wincmd k<CR>
 
 nnoremap <silent> <C-CR> :TermToggle<CR>
 tnoremap <silent> <C-CR> <C-\><C-n>:TermToggle<CR>
