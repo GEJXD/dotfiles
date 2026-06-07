@@ -287,6 +287,11 @@
         "command": "editor.action.goToReferences",
         "when": "editorHasReferenceProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor"
     },
+    {
+        "key": "ctrl+Shift+l",
+        "command": "editor.action.formatDocument",
+        "when": "editorTextFocus && !editorReadonly"
+    },
 
 
     // # select Quick Open / Command Palette suggestion
