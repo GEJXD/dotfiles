@@ -34,7 +34,7 @@ augroup END
 
 augroup qutebrowser
     autocmd!
-    autocmd BufRead,BufNewFile /tmp/qutebrowser-* setlocl filetype=markdown
+    autocmd BufRead,BufNewFile /tmp/qutebrowser-* setlocal filetype=markdown
 augroup END
 
 augroup org
@@ -71,5 +71,5 @@ augroup END
 
 augroup zshEditor
     autocmd!
-    autocmd BufRead,BufNewFile /tmp/zsh*.zsh setlocl filetype=sh
+    autocmd BufRead,BufNewFile /tmp/zsh*.zsh setlocal filetype=sh
 augroup END
