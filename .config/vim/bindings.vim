@@ -9,8 +9,8 @@ tnoremap <leader><ESC> <C-\><C-n>
 tnoremap <leader>q <C-\><C-n>:quit!<CR>
 tnoremap <C-q> <C-\><C-n>:quit!<CR>
 
-nnoremap <silent> <C-CR> :call ToggleTerminalSplit()<CR>
-tnoremap <silent> <C-CR> <C-\><C-n>:call ToggleTerminalSplit()<CR>
+nnoremap <silent> <C-CR> :TermToggle<CR>
+tnoremap <silent> <C-CR> <C-\><C-n>:TermToggle<CR>
 
 nnoremap <silent> <C-S-CR> :call NewTerminalSplit()<CR>
 
