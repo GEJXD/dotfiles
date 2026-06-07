@@ -94,3 +94,20 @@ map('n', '<leader>gdv', ':Gvdiffsplit<CR>')
 map('n', '<leader>gl', ':Git log --graph --pretty=format:\'%Cred%h%Creset%C(yellow)%d%Creset %s%Cgreen(%cr)\'<CR><CR>')
 -- lf
 map('n', '<leader>o', ':LfNewTab<CR>')
+
+-- coc floating window scrolling
+vim.keymap.set('i', '<C-j>', function()
+  if vim.fn['coc#float#has_scroll']() == 1 then
+    return '<c-r>=coc#float#scroll(1)<cr>'
+  else
+    return '<Right>'
+  end
+end, { expr = true, nowait = true, silent = true })
+
+vim.keymap.set('i', '<C-k>', function()
+  if vim.fn['coc#float#has_scroll']() == 1 then
+    return '<c-r>=coc#float#scroll(0)<cr>'
+  else
+    return '<Left>'
+  end
+end, { expr = true, nowait = true, silent = true })
