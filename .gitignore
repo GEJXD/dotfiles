@@ -195,6 +195,7 @@ package-list
 !.config/mpv/scripts/mpv-cut
 !.config/mpv/scripts/mpv-cut/main.lua
 !.config/mpv/scripts/mpv-cut/utils
+!.config/mpv/scripts/stereoscopic.lua
 !.config/mutt/
 !.config/mutt/muttrc
 !.config/mutt/mailcap
