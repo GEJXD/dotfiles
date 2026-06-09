@@ -32,7 +32,7 @@ Plug('h-hg/fcitx.nvim')
 
 Plug('3rd/image.nvim')
 
-Plug('~/doc/unixchad/toggle-term.nvim')
+Plug('gnuunixchad/toggle-term.nvim')
 
 vim.call('plug#end')
 
