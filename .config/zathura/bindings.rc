@@ -22,8 +22,8 @@ map f follow
 map w adjust_window width
 map a adjust_window best-fit
 
-map d toggle_page_mode
-map D cycle_first_column
+map D toggle_page_mode
+map d cycle_first_column
 
 map m mark_add
 map "'" mark_evaluate
