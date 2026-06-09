@@ -15,12 +15,6 @@ map('t', '<leader>q', '<C-\\><C-n> | :quit!<CR>')
 map('t', '<C-q>', '<C-\\><C-n> | :quit!<CR>')
 map('t', '<C-k>', [[<C-\><C-n>:wincmd k<CR>]])
 
-vim.keymap.set('n', '<C-CR>', ':TermToggle<CR>', { silent = true })
-vim.keymap.set('t', '<C-CR>', '<C-\\><C-n>:TermToggle<CR>', { silent = true })
-
-vim.keymap.set('n', '<C-S-CR>', ':TermNew<CR>', { silent = true })
-vim.keymap.set('t', '<C-S-CR>', '<C-\\><C-n>:TermNew<CR>', { silent = true })
-
 map('n', 'W', ':w |e<Left><Left>')
 map('n', '<leader>q', ':q<CR>')
 map('n', '<leader>Q', ':quitall<CR>')
