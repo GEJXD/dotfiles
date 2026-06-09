@@ -17,4 +17,4 @@ num=$(grep -Fn "$1" "$LIST" | cut -d: -f1)
 head=$(tail -n +"$num" "$LIST")
 tail=$(head -n $((num - 1)) "$LIST")
 
-echo -e "$head"\\n"$tail" > "$LIST"
+printf "$head"\\n"$tail" > "$LIST"
