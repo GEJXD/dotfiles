@@ -32,6 +32,8 @@ Plug('h-hg/fcitx.nvim')
 
 Plug('3rd/image.nvim')
 
+Plug('~/doc/unixchad/toggle-term.nvim')
+
 vim.call('plug#end')
 
 require('plugins.coc')
@@ -43,3 +45,4 @@ require('plugins.render-markdown')
 require('plugins.vim-floaterm')
 require('plugins.lf')
 require('plugins.image')
+require('plugins.toggle-term')
