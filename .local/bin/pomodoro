@@ -52,13 +52,16 @@ draw_progress() {
     filled=$(( elapsed * width / total ))
 
     bar="["
-    for ((i=0; i<filled; i++)); do
-        bar+="+"
+    i=0
+    while [ $i -lt $filled ]; do
+        bar="${bar}+"
+        i=$(( i + 1 ))
     done
-    for ((i=filled; i<width; i++)); do
-        bar+="-"
+    while [ $i -lt $width ]; do
+        bar="${bar}-"
+        i=$(( i + 1 ))
     done
-    bar+="]"
+    bar="${bar}]"
 
     printf "\r%-${width}s %3d%% (%d/%d min)" "$bar" "$percent" "$elapsed" "$total"
 }
