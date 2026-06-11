@@ -4,6 +4,6 @@
 -- @since 2026
 
 require('toggle-term').setup({
-  height_ratio = 0.25,
+  ratio = 0.25,
   direction = 'bottom',
 })
