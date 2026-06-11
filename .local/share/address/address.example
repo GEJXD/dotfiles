@@ -79,6 +79,10 @@ git codeberg zoomx|https://codeberg.org/unixchad/zoomx
 git github zoomx|https://github.com/gnuunixchad/zoomx
 git codeberg jade|https://codeberg.org/unixchad/fcitx5-theme-jade
 git github jade|https://github.com/gnuunixchad/fcitx5-theme-jade
+git github toggle-term.nvim|https://github.com/gnuunixchad/toggle-term.nvim
+git codeberg toggle-term.nvim|https://codeberg.org/unixchad/toggle-term.nvim
+git github mpv-stereoscopic|https://github.com/gnuunixchad/mpv-stereoscopic
+git codeberg mpv-stereoscopic|https://codeberg.org/unixchad/mpv-stereoscopic
 git github swayimg|https://github.com/artemsen/swayimg
 
 git firefox arkenfox user.js for firefox|https://github.com/arkenfox/user.js
