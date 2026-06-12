@@ -40,4 +40,6 @@ mp.register_event("file-loaded", function()
     remove_filter()
 end)
 
+mp.add_key_binding("D", "toggle-stereoscopic", toggle_stereoscopic)
+
 mp.register_script_message("toggle-stereoscopic", toggle_stereoscopic)
