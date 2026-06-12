@@ -7,7 +7,7 @@ local mp = require 'mp'
 
 local enabled = false
 
-local function apply_filter()
+local function apply_filter(silent)
     local width = mp.get_property_native("width", 0)
     local height = mp.get_property_native("height", 0)
 
@@ -18,26 +18,30 @@ local function apply_filter()
         )
         mp.set_property("vf", vf)
     end
-    mp.osd_message("stereoscopic: on", 2)
+    if not silent then
+        mp.osd_message("stereoscopic: on", 2)
+    end
 end
 
-local function remove_filter()
+local function remove_filter(silent)
     mp.set_property("vf", "")
-    mp.osd_message("stereoscopic: off", 2)
+    if not silent then
+        mp.osd_message("stereoscopic: off", 2)
+    end
 end
 
 local function toggle_stereoscopic()
     enabled = not enabled
     if enabled then
-        apply_filter()
+        apply_filter(false)
     else
-        remove_filter()
+        remove_filter(false)
     end
 end
 
 mp.register_event("file-loaded", function()
     enabled = false
-    remove_filter()
+    remove_filter(true)
 end)
 
 mp.add_key_binding("D", "toggle-stereoscopic", toggle_stereoscopic)
