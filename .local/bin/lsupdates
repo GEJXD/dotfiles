@@ -29,9 +29,8 @@ get_default() {
     local pkg=(base base-devel linux linux-headers)
 
     local default_list="$default_list $(pacman -Qeq)"
-    for i in "${pkg[@]}"; do
-        default_list="$default_list $(pactree -u $i)"
-    done
+    default_list+=$'\n'$(printf '%s\n' "${pkg[@]}" \
+        | xargs -P4 -I{} pactree -u {} 2>/dev/null)
     default_list=$(printf '%s\n' "$default_list" | sort -u)
 
     pkg_list="$(comm -12 <(cat "$LOG_CACHE") <(printf '%s\n' "$default_list"))"
