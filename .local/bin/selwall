@@ -1,20 +1,24 @@
 #!/usr/bin/sh
 # @author nate zhou
 # @since 2024,2025,2026
-# select an image for sway's wallpaper with imv
+# @depends xsetwall nsxiv swaybg swayimg
+# select an image to wallpaper in X11 and Wayland
 
 LIST="${XDG_RUNTIME_DIR}/gallery.list"
 
-notify-send -u low -r 438 "[Shift+w] to set wallpaper"
-
-
+notify() {
+    notify-send -u low -r 438 "$@"
+}
 
 ls -t $(find $HOME/pic/wallpapers -type f ) \
     | shuf \
     > "$LIST"
 
 if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+     notify "[Shift+w] to set wallpaper"
     swayimg --class='Floating_IMG' -g -f "$LIST"
 elif [ -n "$XAUTHORITY" ]; then
+    notify "[Ctrl-x w] to set wallpaper"
     cat "$LIST" | nsxiv -N "Floating_IMG"  -t -
 fi
+
