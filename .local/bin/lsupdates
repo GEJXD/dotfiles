@@ -47,9 +47,13 @@ print_err() {
 
 notify() {
     title="(${pkg_count} $mode)"
-    printf "%s\n%s\n" "$title" "$pkg_list"
-    [ "$XDG_SESSION_TYPE" != "tty" ] \
-        && notify-send -u low -r 181 "$(basename $0)${title}" "${pkg_list}"
+    printf "%s\n%s\n" "$title" "${pkg_list//$'\n'/ }"
+
+    if [ "$XDG_SESSION_TYPE" != "tty" ]; then
+        notify-send -u low -r 181 \
+                    "$(basename "$0")${title}" \
+                    "${pkg_list//$'\n'/ }"
+    fi
 }
 
 [ ! -f "$LOG_CACHE" ] && (${HOME}/.local/bin/checkupdates-cron || print_err)
