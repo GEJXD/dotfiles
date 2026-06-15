@@ -1,21 +1,54 @@
-#!/usr/bin/sh
+#!/usr/bin/env bash
 # @author nate zhou
 # @since 2024,2025,2026
 # list updatable packages through xdg notification
-# @depends checkupdates-cron*
+# @depends ~/.local/bin/checkupdates-cron
 
-MY_TERM="foot"
-LOG_CACHE="$HOME/.cache/checkupdates-cron.log"
-ERR_CACHE="$HOME/.cache/checkupdates-cron.err"
+LOG_CACHE="${HOME}/.cache/checkupdates-cron.log"
+ERR_CACHE="${HOME}/.cache/checkupdates-cron.err"
 
-# if cache files don't exist, call checkupdates-cron once
-if [ ! -f "$LOG_CACHE" ]; then
-    $HOME/.local/bin/checkupdates-cron
-fi
+get_all() {
+    mode="all"
+    pkg_list="$(cat $LOG_CACHE)"
+}
 
-pkg_count=$(cat "$LOG_CACHE" | wc -w )
-pkg_list=$(cat "$LOG_CACHE")
+get_explicit() {
+    mode="explicit"
+    pkg_list="$(comm -12 <(cat $LOG_CACHE) <(pacman -Qeq | sort))"
+}
 
-printf "%s\n%s\n" "$pkg_count" "$pkg_list"
-[ "$XDG_SESSION_TYPE" != "tty" ] \
-    && notify-send -u low -r 181 "lsupdates" "available updates: ${pkg_count}\n${pkg_list}"
+count_updates() {
+    pkg_count="$(echo $pkg_list | wc -w)"
+}
+
+get_default() {
+    get_explicit
+}
+
+print_err() {
+    cat $ERR_CACHE
+}
+
+notify() {
+    title="(${pkg_count} $mode)"
+    printf "%s\n%s\n" "$title" "$pkg_list"
+    [ "$XDG_SESSION_TYPE" != "tty" ] \
+        && notify-send -u low -r 181 "$(basename $0)${title}" "${pkg_list}"
+}
+
+[ ! -f "$LOG_CACHE" ] && (${HOME}/.local/bin/checkupdates-cron || print_err)
+
+[ -z "$1" ] && get_default
+
+while [ -n "$1" ]; do
+    case "$1" in
+        -e|--explicit) get_explicit ;;
+        -a|--all) get_all ;;
+        *) get_default ;;
+    esac
+    shift
+done
+
+count_updates
+
+notify
