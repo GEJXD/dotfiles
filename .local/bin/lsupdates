@@ -2,7 +2,7 @@
 # @author nate zhou
 # @since 2024,2025,2026
 # list updatable packages through xdg notification
-# @depends ~/.local/bin/checkupdates-cron
+# @depends pacman-contrib ~/.local/bin/checkupdates-cron
 
 LOG_CACHE="${HOME}/.cache/checkupdates-cron.log"
 ERR_CACHE="${HOME}/.cache/checkupdates-cron.err"
@@ -15,6 +15,11 @@ get_all() {
 get_explicit() {
     mode="explicit"
     pkg_list="$(comm -12 <(cat $LOG_CACHE) <(pacman -Qeq | sort))"
+}
+
+get_dependency() {
+    mode="dependency"
+    pkg_list="$(comm -12 <(cat $LOG_CACHE) <(pactree $1 -u | sort))"
 }
 
 count_updates() {
@@ -44,7 +49,7 @@ while [ -n "$1" ]; do
     case "$1" in
         -e|--explicit) get_explicit ;;
         -a|--all) get_all ;;
-        *) get_default ;;
+        *) get_dependency "$1";;
     esac
     shift
 done
