@@ -264,6 +264,7 @@ package-list
 !.config/qutebrowser/search.py.example
 !.config/qutebrowser/userscripts
 !.config/qutebrowser/greasemonkey/
+!.config/qutebrowser/greasemonkey/sb.user.js
 !.config/qutebrowser/greasemonkey/yt-ads.js
 !.config/qutebrowser/styles
 !.config/qutebrowser/styles/black.css
