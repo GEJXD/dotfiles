@@ -31,7 +31,7 @@ print_err() {
 
 notify() {
     title="(${pkg_count} $mode)"
-    printf "%s\n%s\n" "$title" "$pkg_list"
+    printf "%s\n%s\n" "$title" "$pkg_list" | less -F
     [ "$XDG_SESSION_TYPE" != "tty" ] \
         && notify-send -u low -r 181 "$(basename $0)${title}" "${pkg_list}"
 }
