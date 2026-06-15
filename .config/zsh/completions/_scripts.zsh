@@ -239,3 +239,13 @@ _sync-apk() {
     fi
 }
 compdef _sync-apk sync-apk
+
+_lsupdates() {
+    local options
+    options=("-e" "--explicit" "-a" "-all" \
+             $(pacman -Qq))
+    if [ "$CURRENT" -eq 2 ]; then
+        _describe 'options' options
+    fi
+}
+compdef _lsupdates lsupdates

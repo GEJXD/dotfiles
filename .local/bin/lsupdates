@@ -4,6 +4,8 @@
 # list updatable packages through xdg notification
 # @depends pacman-contrib ~/.local/bin/checkupdates-cron
 
+# This script has completions: `.config/{z,ba}sh/completions/_scripts.{z,ba}sh`
+
 LOG_CACHE="${HOME}/.cache/checkupdates-cron.log"
 ERR_CACHE="${HOME}/.cache/checkupdates-cron.err"
 

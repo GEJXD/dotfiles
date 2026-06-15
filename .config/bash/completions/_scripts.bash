@@ -279,3 +279,14 @@ _sync-apk() {
     fi
 }
 complete -F _sync-apk sync-apk
+
+_lsupdates() {
+    local options
+    local current_word="${COMP_WORDS[COMP_CWORD]}"
+    options="-e --explicit -a --all \
+             $(pacman -Qq))"
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=($(compgen -W "${options}" -- ${current_word}))
+    fi
+}
+complete -F _lsupdates lsupdates
