@@ -202,3 +202,7 @@ def_key "ctrl-k"
 # visualizer
 def_key "v"
   toggle_visualization_type
+
+# visualizer: press 8 to toggle waveform
+def_key "8"
+  show_visualizer

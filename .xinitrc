@@ -34,7 +34,6 @@ config_x() {
 
     xset r rate 200 30 &
 
-    setxkbmap -option caps:swapescape,altwin:swap_alt_win &
 
     unclutter --timeout 3 &
 

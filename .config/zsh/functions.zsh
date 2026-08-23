@@ -99,4 +99,10 @@ _EOF_
         esac
         shift
     done
+
 }
+
+function nvm() {
+    source /usr/share/nvm/init-nvm.sh
+}
+

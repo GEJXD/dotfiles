@@ -1,120 +1,61 @@
-# <img src="./misc/dot-repo.png" width="24"/> dotfiles
-<img src="./misc/kwm.png" width="1920"/>
+# dotfiles
 
-[kwm on river](./misc/kwm.png) | [river-classic](./misc/river-classic.png) | [dwl](./misc/dwl.png) | [sway](./misc/sway.png) | [dwm](./misc/dwm.png)
+My Arch Linux dotfiles, powered by [river](https://github.com/riverwm/river) (Wayland).
 
-My Arch Installation Guide is moved to [codeberg](https://codeberg.org/unixchad/arch-install-guide)/[github](https://github.com/gnuunixchad/arch-install-guide)
+## Stack
 
-## Usage
+| | |
+|:---|:---|
+| compositor | river 0.5 + [kwm](https://github.com/kewuaa/kwm) (tiling WM) · river-classic |
+| status bar | damblocks (+ dam for river-classic) |
+| terminal | foot |
+| editor | neovim ([NvChad](https://nvchad.com)) |
+| browser | qutebrowser · firefox (Wayland) |
+| menu | wmenu |
+| input method | fcitx5 (pinyin) |
+| audio | pipewire + wob OSD |
+| music | mpd · ncmpcpp (visualizer on `8`) |
+
+## Keybindings (river 0.5 + kwm, mod = Super)
+
+| Keys | Action |
+|---|---|
+| `Super+q` | close focused window |
+| `Super+Shift+q` | exit session |
+| `Super+g` / `Super+Shift+g` / `Super+Ctrl+g` | screenshot: fullscreen / region / all (copied to clipboard) |
+| `Super+p` | launcher (wmenu) |
+| `Super+1..9` / `Super+0` | switch tag / all tags |
+| `Super+minus` / `Super+equal` | volume ±1% |
+| `Super+Ctrl+minus` / `Super+Ctrl+equal` | microphone ±5% |
+| `Super+Shift+minus` / `Super+Shift+equal` | volume ±10% |
+| `Super+[` / `Super+]` | brightness ±1% |
+| `Super+Ctrl+[` / `Super+Ctrl+]` | brightness ±5% |
+| `Super+Shift+[` / `Super+Shift+]` | brightness ±10% |
+| `Super+Space` | toggle IME |
+| `Ctrl+Space` | toggle Chinese IME (fcitx5) |
+
+## Installation
+
 ```sh
-# Clone this repository
-git clone https://codeberg.org/unixchad/dotfiles
+# clone
+git clone git@github.com:GEJXD/dotfiles.git ~/doc/heart/dotfiles
+cd ~/doc/heart/dotfiles
 
-# Create directories if needed to avoid dumping everything in dotfiles directory
-mkdir -p ${HOME}/.local/{share,state}
-mkdir -p ${HOME}/.{cache,config/"Code -OSS"}
+# create dirs
+mkdir -p ~/.local/{share,state}
+mkdir -p ~/.{cache,config/"Code - OSS"}
 
-# Create symlinks with GNU Stow
-cd dotfiles
+# link dotfiles
 stow -t ~ . --adopt
+./install-user.sh        # user-space setup (zsh, crontab, configs)
 
-# Optionally, run my post-install scripts AT YOUR OWN RISK
-./install-pkg.sh --install --base
+# packages (WSL/physical aware)
+./install-pkgs.sh --install --base
 sudo ./install-root.sh
-./install-user.sh
-
 ```
-> [!NOTE]
-> A few software require manual setup:
-> - Software's config named to `*.example` for privacy reasons
-> - Software's config listed in `./.stow-local-ignore`
 
-## Software I Use
-I prefer software that are free as in freedom, keyboard centric, terminal based,
-vim like, do one thing and do it well. And try to avoid proprietary garbage and
-spyware when I can.
+## Notes
 
-| | |
-|:---|:---|
-| scripting shell | dash |
-| login shell | zsh |
-| terminal multiplexer| [abduco](https://codeberg.org/unixchad/abduco) · [dvtm](https://codeberg.org/unixchad/dvtm) |
-| terminal emulator | foot · [st](https://codeberg.org/unixchad/st) |
-| window manager | [river-classic](https://codeberg.org/unixchad/river-classic) · [dwl](https://codeberg.org/unixchad/dwl) · [kwm](https://codeberg.org/unixchad/kwm) · sway · [dwm](https://codeberg.org/unixchad/dwm)|
-| status generator | [damblocks](https://codeberg.org/unixchad/damblocks) |
-| output management | wlr-randr · kanshi |
-| menu | wmenu · [mew](https://codeberg.org/unixchad/mew) · [dmenu](https://codeberg.org/unixchad/dmenu) |
-| notification | dunst |
-| editor | neovim · vim |
-| email | neomutt · isync |
-| file manager | lf |
-| music player | mpd · ncmpcpp |
-| video player | mpv |
-| image viewer | swayimg · [nsxiv](https://codeberg.org/unixchad/nsxiv) |
-| ebook reader | zathura |
-| rss feeder | newsboat |
-| calender & todo | calcurse · taskwarrior |
-| virtualization | qemu · libvirt · virtmanager |
-| security | cryptsetup · sbctl · gpg · firejail |
-| browser | w3m · qutebrowser |
-| download | curl · wget · transmission-cli · yt-dlp · httrack |
-| file sharing | rsync · samba · android-file-transfer · qrtool |
-| dotfiles manager | git · stow |
-| clipboard | wl-clipboard · cliphist |
-| input method | fcitx5 |
-
-## My Personal Scripts (supporting Wayland and Xorg)
-| | |
-|:---|:---|
-| status bar | [damblocks](./.local/bin/damblocks) |
-| weather report | [wttr](./.local/bin/wttr) |
-| screenshot | [shoot](./.local/bin/shoot) |
-| screen capture | [capture](./.local/bin/capture) |
-| webcam | [camera](./.local/bin/camera) |
-| voice recorder | [record](./.local/bin/record) |
-| brightness | [bright](./.local/bin/bright) |
-| audio volume | [audio](./.local/bin/audio) |
-| audio sink | [speaker](./.local/bin/speaker) |
-| bookmark | [address](./.local/bin/address) |
-| clipboard | [clip](./.local/bin/clip) |
-| file opener | [rifle](./.local/bin/rifle) · [gpg-rifle](./.local/bin/gpg-rifle) · [url-rifle](./.local/bin/url-rifle) |
-| file previewer | [scope](./.local/bin/scope) |
-| mounting | [saddle](./.local/bin/saddle) · [phone](./.local/bin/phone) |
-| gpg | [seal](./.local/bin/seal) |
-| mutt_oauth2 | [muttauth](./.local/bin/muttauth) |
-| shortcuts generator | [teleport-genesis](./.local/bin/teleport-genesis) |
-| color picker | [picker](./.local/bin/picker) |
-| screen magnifier | [mag](./.local/bin/mag) |
-| qutebrowser | [userscripts](./.local/bin/qutebrowser/) |
-| xwayland-satellite | [xwl](./.local/bin/xwl) |
-| reload other scripts | [reload](./.local/bin/reload) |
-
-## Chinese Video Channel
-I have dedicated videos for almost every software I use:
-
-[unixchad at bilibili](https://space.bilibili.com/34569411)
-
-Software I use to create videos:
-| | |
-|:---|:---|
-| screen capture | wf-recorder · slurp |
-| voice recording | pw-record · noise-suppression-for-voice |
-| video editing | ffmpeg · mpv-cut · kdenlive |
-| screenshots | grim · slurp |
-| thumbnails | imagemagick · gimp |
-
-All emails from me will be signed by the same GPG key that I sign commits with:
-- Import my key: `gpg --recv-keys 117094DA1AEA0835E4ED0770F7476912AA224CAC`
-- Download or copy at [here](./unixchad.asc)
-- Always encrypt your emails with my public key if you know how to.
-
-## License
-I am the author of every file with the following disclaimer:
-```sh
-# @author nate zhou
-```
-I license them under the [GNU GPL-3.0](./LICENSE). There is no warranty, to
-the extend permitted by applicable law.
-
-A few scripts or config files come from others, and a credit to the respective
-authors should be spotted.
+- Forked/adapted from [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles) — upstream files remain GPL-3.0, this repo is MIT.
+- Machine-local files are gitignored (`~/.config/git/user.inc`, `proxy.inc`, SSH keys live outside the repo).
+- `~/doc/heart/fix-local-links.sh` re-applies machine-specific symlinks after `stow -R`.

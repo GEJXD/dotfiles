@@ -17,7 +17,7 @@ $spawn "swaybg -i ${HOME}/.local/share/wallpaper -m fill" &
 # restart decided by scripts
 $spawn "${HOME}/.local/bin/foots" &
 
-$spawn "${HOME}/.local/bin/lucia -d" &
+#$spawn "${HOME}/.local/bin/lucia -d" &   # AI assistant not configured on this machine
 
 $spawn "${HOME}/.local/bin/mbs-cron" &
 
@@ -26,7 +26,7 @@ pgrep 'swayidle' || $spawn "swayidle" &
 
 pgrep 'kanshi' || $spawn "kanshi" &
 
-killall -q gammastep; $spawn "gammastep -O 5000" &
+pgrep -x mpd || $spawn "mpd" &
 
 pgrep -f 'wl-paste --watch cliphist store' || $spawn "wl-paste --watch cliphist store" &
 

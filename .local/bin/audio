@@ -85,11 +85,17 @@ case "$2" in
     --minus)
         set_volume "$1" "1%-"
         ;;
+    --minus5)
+        set_volume "$1" "5%-"
+        ;;
     --minus10)
         set_volume "$1" "10%-"
         ;;
     --plus)
         set_volume "$1" "1%+"
+        ;;
+    --plus5)
+        set_volume "$1" "5%+"
         ;;
     --plus10)
         set_volume "$1" "10%+"

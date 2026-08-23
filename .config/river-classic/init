@@ -11,7 +11,7 @@
 
 # remap key
 #riverctl keyboard-layout-file "$HOME/.config/layout.xkb"
-riverctl keyboard-layout -options caps:swapescape,altwin:swap_alt_win us
+riverctl keyboard-layout us
 
 # input
 riverctl focus-follows-cursor disabled

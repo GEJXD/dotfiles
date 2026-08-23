@@ -133,6 +133,13 @@ update_microphone() {
                   2>/dev/null)
     local muted=$(cat "${XDG_CACHE_HOME}/audio-@DEFAULT_AUDIO_SOURCE@.muted" \
                   2>/dev/null)
+    # fallback: query pipewire directly when the cache hasn't been seeded yet
+    if [ -z "$level" ] && command -v wpctl >/dev/null 2>&1; then
+        local wp="$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null)"
+        case "$wp" in *MUTED*) muted="1";; esac
+        level="$(printf '%s' "$wp" | sed -n 's/^.*Volume: \([0-9.]*\).*/\1/p')"
+        [ -n "$level" ] && level="$(awk -v v="$level" 'BEGIN{printf "%d", v*100}')"
+    fi
     [ -z "$muted" ] && icon="" || icon=""
     [ -z "$level" ] || level="${level}%"
     microphone="${icon}${level}"
@@ -189,6 +196,13 @@ update_fanmode() {
             0|auto) icon="󱜝" ;;
         esac
         speed="$(grep 'speed:' "$POLICY_IBM" | awk '{print $2}')"
+    else
+        # generic fallback: first hwmon fan sensor (MSI laptops etc.)
+        for fan in /sys/class/hwmon/hwmon*/fan1_input; do
+            [ -r "$fan" ] || continue
+            speed="$(cat "$fan" 2>/dev/null)"
+            break
+        done
     fi
     fanmode="${icon}${speed}"
 }

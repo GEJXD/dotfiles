@@ -62,11 +62,17 @@ while [ -n "$1" ]; do
         --minus)
             changeBrightness '1%-'
             ;;
+        --minus5)
+            changeBrightness '5%-'
+            ;;
         --minus10)
             changeBrightness '10%-'
             ;;
         --plus)
             changeBrightness '1%+'
+            ;;
+        --plus5)
+            changeBrightness '5%+'
             ;;
         --plus10)
             changeBrightness '10%+'

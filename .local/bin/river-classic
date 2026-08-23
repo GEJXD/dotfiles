@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# river-classic - start the river-classic compositor with the river-classic
+# configuration (~/.config/river-classic/init) instead of the default
+# ~/.config/river/init (which launches kwm for the river 0.5 stack).
+# @see https://github.com/gnuunixchad/river-classic
+exec /usr/local/bin/river-classic -c "$HOME/.config/river-classic/init" "$@"
