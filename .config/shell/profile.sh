@@ -23,7 +23,7 @@ export EDITOR="/usr/bin/nvim"
 export PAGER="/usr/bin/less"
 export DVTM_EDITOR="/usr/bin/vim"
 export DVTM_PAGER="/usr/bin/less -R"
-export BROWSER="qutebrowser"
+export BROWSER="firefox"
 command -v pacman > /dev/null && pacman -Qi nvidia-utils > /dev/null 2>&1 && export QTWEBENGINE_CHROMIUM_FLAGS='--disable-gpu' # fix qutebrowser crash on wlroots with nvidia
 
 export XDG_DOWNLOAD_DIR="$HOME/dls"
