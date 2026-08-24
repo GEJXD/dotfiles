@@ -69,12 +69,13 @@ install_yay() {
 }
 
 check_src() {
-    repo_prefix="https://codeberg.org/unixchad"
+    local repo_url="https://codeberg.org/unixchad/${package}"
+    [ "$package" = "kwim" ] && repo_url="https://github.com/kewuaa/kwim.git"
 
     [ -d "${src_dir}/${package}" ] || {
-        mkdir -p $src_dir
-        cd $src_dir
-        git clone ${repo_prefix}/${package}
+        mkdir -p "$src_dir"
+        cd "$src_dir"
+        git clone "$repo_url" "$package"
         cd -
     }
 }
@@ -372,6 +373,7 @@ add_river() {
 add_kwm() {
     add_river
 
+    src_zig="$src_zig kwim"
     src_zig="$src_zig kwm"
 }
 

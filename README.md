@@ -61,6 +61,7 @@ sudo ./install-root.sh
 The tracked configuration is the source of truth for the active setup:
 
 - `.config/kwm/config.zon` — current kwm runtime configuration, including output switching.
+- `.config/kwim/config.zon` — keyboard repeat timing used by kwm (`30` repeats/sec, `200ms` delay).
 - `.config/river-classic/` and `.config/kanshi/` — compositor bindings and the 2K internal + 1080p HDMI layout.
 - `.config/nvim/` — the active NvChad configuration and plugin lock file.
 - `.config/fcitx5/profile` — the selected keyboard and Pinyin input methods.

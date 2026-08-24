@@ -1,0 +1,6 @@
+.{
+    // Apply the same keyboard repeat timing to every input device.
+    .input_device_rules = .{
+        .{ .repeat_info = .{ .rate = 30, .delay = 200 } },
+    },
+}
