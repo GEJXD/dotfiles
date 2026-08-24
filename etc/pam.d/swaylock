@@ -1,0 +1,6 @@
+#%PAM-1.0
+# swaylock only: do not route through system-auth so failed unlock
+# attempts do not trigger pam_faillock and lock the user account.
+auth required pam_unix.so
+auth required pam_permit.so
+account required pam_unix.so

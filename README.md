@@ -13,6 +13,7 @@ My Arch Linux dotfiles, powered by [river](https://github.com/riverwm/river) (Wa
 | browser | qutebrowser · firefox (Wayland) |
 | menu | wmenu |
 | input method | fcitx5 (pinyin) |
+| lock screen | swaylock (shared config for both compositor stacks) |
 | audio | pipewire + wob OSD |
 | music | mpd · ncmpcpp (visualizer on `8`) |
 
@@ -63,8 +64,9 @@ The tracked configuration is the source of truth for the active setup:
 - `.config/river-classic/` and `.config/kanshi/` — compositor bindings and the 2K internal + 1080p HDMI layout.
 - `.config/nvim/` — the active NvChad configuration and plugin lock file.
 - `.config/fcitx5/profile` — the selected keyboard and Pinyin input methods.
+- `.config/swaylock/config` — the shared visible lock-screen indicator and colors.
 - `.config/xdg-desktop-portal-wlr/config` — screenshot output selection.
-- `etc/` — tracked system configuration, including the `isw` module option.
+- `etc/` — tracked system configuration, including the `isw` module option and the standalone `swaylock` PAM policy.
 - `misc/river-classic-wl-shm-v3.patch` — the local build fix required by the current Wayland protocol package.
 
 `install-user.sh` runs `fix-local-links.sh` after stow. It keeps private SSH keys and generated NvChad plugin data outside the repository while restoring the tracked links.

@@ -21,7 +21,7 @@
         .{ "sh", "-c", "pgrep -x mpd || mpd" },
         .{ "sh", "-c", "pgrep -x kanshi || kanshi" },
         .{ "sh", "-c", "pgrep -x fcitx5 || fcitx5 -d --verbose '*=0'" },
-        .{ "sh", "-c", "pgrep -x swayidle || swayidle" },
+        .{ "sh", "-c", "pgrep -x swayidle || swayidle -w" },
         .{ "sh", "-c", "pgrep -x wl-paste || wl-paste --watch cliphist store" },
         .{ "sh", "-c", "pgrep -x dunst || dunst -conf ${HOME}/.config/dunst/dunstrc-offset" },
         .{ "sh", "-c", "pgrep -x swaybg || swaybg -i ${HOME}/.local/share/wallpaper -m fill" },
@@ -1147,7 +1147,7 @@
                 .event = .{
                     .click = .{
                         .pressed = .{
-                            .spawn_shell = .{ .cmd = "waylock -init-color 0x000000 -input-color 0x005577 -fail-color 0xcc3333" },
+                            .spawn_shell = .{ .cmd = "swaylock -f" },
                         },
                     },
                 },

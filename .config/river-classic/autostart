@@ -27,7 +27,7 @@ $spawn "${HOME}/.local/bin/foots" &
 $spawn "${HOME}/.local/bin/mbs-cron" &
 
 # start if not running
-pgrep 'swayidle' || $spawn "swayidle" &
+pgrep 'swayidle' || $spawn "swayidle -w" &
 
 pgrep 'kanshi' || $spawn "kanshi" &
 

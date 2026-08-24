@@ -41,6 +41,7 @@ package-list
 !etc/default/grub
 !etc/pam.d/
 !etc/pam.d/waylock
+!etc/pam.d/swaylock
 !etc/tlp.conf
 !etc/samba/
 !etc/samba/smb.conf.example

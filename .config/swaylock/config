@@ -1,0 +1,31 @@
+# swaylock/config
+# Shared by river-classic, kwm, and swayidle.
+
+color=000000
+indicator-idle-visible
+indicator-radius=80
+indicator-thickness=12
+
+inside-color=111111
+inside-clear-color=111111
+inside-ver-color=111111
+inside-wrong-color=111111
+
+ring-color=427b58
+ring-clear-color=8ce10b
+ring-ver-color=fd971f
+ring-wrong-color=f92672
+
+line-color=00000000
+line-clear-color=00000000
+line-ver-color=00000000
+line-wrong-color=00000000
+separator-color=00000000
+
+key-hl-color=8ce10b
+bs-hl-color=f92672
+text-color=eeeeee
+text-clear-color=eeeeee
+text-ver-color=eeeeee
+text-wrong-color=eeeeee
+show-failed-attempts

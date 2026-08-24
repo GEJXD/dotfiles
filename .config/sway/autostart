@@ -16,7 +16,7 @@ exec_always "${HOME}/.local/bin/lucia -d"
 exec_always "${HOME}/.local/bin/mbs-cron"
 
 # start if not running
-exec_always "pgrep 'swayidle' || swayidle"
+exec_always "pgrep 'swayidle' || swayidle -w"
 
 exec_always "pgrep 'kanshi' || kanshi"
 

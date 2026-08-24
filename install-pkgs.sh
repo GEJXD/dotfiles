@@ -312,7 +312,7 @@ add_wayland() {
     pkg="$pkg wl-mirror"
     pkg="$pkg swaybg"
     pkg="$pkg swayidle"
-    pkg="$pkg waylock"
+    pkg="$pkg swaylock"
     pkg="$pkg wmenu"
     pkg="$pkg wtype"
     pkg="$pkg libnotify"
