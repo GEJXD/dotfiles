@@ -6,7 +6,7 @@
 spawn="riverctl spawn"
 
 # always
-$spawn "${HOME}/.local/bin/dam-run" &
+$spawn "${HOME}/.local/bin/dam-run river-classic" &
 
 # restart
 killall -q swaybg fcitx5 mpc &

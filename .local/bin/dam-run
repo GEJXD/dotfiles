@@ -1,21 +1,93 @@
 #!/usr/bin/sh
 # @author nate zhou
 # @since 2025,2026
-# dam-run: start status bar for river-classic
+# dam-run: reconcile the status bar for either river stack
 # @depends: dam damblocks
 
-bar_start() {
-    ${HOME}/.local/bin/damblocks | dam &
-    ${HOME}/.local/bin/damblocks-mpdd
+mode=${1:-river-classic}
+
+case "$mode" in
+    river-classic|kwm)
+        ;;
+    *)
+        echo "usage: ${0##*/} [river-classic|kwm]" >&2
+        exit 2
+        ;;
+esac
+
+# Match the script command line, not dam-run or damblocks-mpdd itself.
+default_running() {
+    pgrep -f -- '/[.]local/bin/damblocks$' >/dev/null 2>&1
 }
 
-bar_restart() {
-    killall dam
-    pkill -f damblocks
-    bar_start
+fifo_running() {
+    pgrep -f -- '/[.]local/bin/damblocks --fifo([[:space:]]|$)' >/dev/null 2>&1
 }
 
-! pgrep 'dam' > /dev/null 2>&1 \
-    || ! pgrep -f 'damblocks' > /dev/null 2>&1 \
-    || ! pgrep -f 'damblocks-mpd' > /dev/null 2>&1 \
-    && bar_restart
+mpdd_running() {
+    pgrep -f -- '/[.]local/bin/damblocks-mpdd([[:space:]]|$)' >/dev/null 2>&1
+}
+
+dam_running() {
+    pgrep -x dam >/dev/null 2>&1
+}
+
+stop_damblocks() {
+    pkill -f -- '/[.]local/bin/damblocks --fifo([[:space:]]|$)' 2>/dev/null || :
+    pkill -f -- '/[.]local/bin/damblocks$' 2>/dev/null || :
+}
+
+stop_mpdd() {
+    pkill -f -- '/[.]local/bin/damblocks-mpdd([[:space:]]|$)' 2>/dev/null || :
+}
+
+stop_all() {
+    pkill -x dam 2>/dev/null || :
+    stop_damblocks
+    stop_mpdd
+}
+
+start_classic() {
+    # river-classic consumes damblocks through dam on stdin.
+    if ! dam_running || ! default_running || fifo_running; then
+        stop_all
+        ( "$HOME/.local/bin/damblocks" | dam ) 9>&- >/dev/null 2>&1 &
+    fi
+
+    if ! mpdd_running; then
+        "$HOME/.local/bin/damblocks-mpdd" 9>&- >/dev/null 2>&1 &
+    fi
+}
+
+start_kwm() {
+    # kwm's built-in bar consumes the FIFO; no external dam is used.
+    if ! fifo_running || dam_running || default_running; then
+        stop_all
+        "$HOME/.local/bin/damblocks" --fifo 9>&- >/dev/null 2>&1 &
+    fi
+
+    if ! mpdd_running; then
+        "$HOME/.local/bin/damblocks-mpdd" 9>&- >/dev/null 2>&1 &
+    fi
+}
+
+# Serialize switches between the two compositor startup paths.
+if command -v flock >/dev/null 2>&1; then
+    exec 9>"${XDG_RUNTIME_DIR:-/tmp}/dam-run.lock"
+    flock 9
+fi
+
+case "$mode" in
+    river-classic)
+        start_classic
+        ;;
+    kwm)
+        start_kwm
+        ;;
+esac
+
+# Background bar processes inherit fd 9; release the lock before exiting.
+if command -v flock >/dev/null 2>&1; then
+    flock -u 9 2>/dev/null || :
+    exec 9>&-
+fi

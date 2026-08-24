@@ -14,8 +14,6 @@
         // gammastep removed: standard color temperature by default,
         // toggle warm mode with Super+Shift+b
         // every entry is guarded so `reload -k` never spawns duplicates
-        // note: scripts run as `sh` (pgrep -x fails), so they use -f with [x]
-        // to avoid matching the guarding shell itself
         .{ "sh", "-c", "pgrep -x mpd || mpd" },
         .{ "sh", "-c", "pgrep -x kanshi || kanshi" },
         .{ "sh", "-c", "pgrep -x fcitx5 || fcitx5 -d --verbose '*=0'" },
@@ -28,8 +26,7 @@
         // .{ "sh", "-c", "pgrep -f 'lucia -d' || ${HOME}/.local/bin/lucia -d" },
         .{ "sh", "-c", "pgrep -f '^tail -f /run/user/1000/wob.fifo' || ${HOME}/.local/bin/wobd -c ${HOME}/.config/wob/wob-offset.ini" },
         .{ "sh", "-c", "pgrep -f '^/usr/bin/sh .*/.local/bin/mbs-cron' || ${HOME}/.local/bin/mbs-cron" },
-        .{ "sh", "-c", "pgrep -f '^/usr/bin/sh .*/.local/bin/damblocks' || ${HOME}/.local/bin/damblocks --fifo" },
-        .{ "sh", "-c", "pgrep -f '^/usr/bin/sh .*/.local/bin/damblocks-mpdd' || ${HOME}/.local/bin/damblocks-mpdd" },
+        .{ "sh", "-c", "${HOME}/.local/bin/dam-run kwm" },
     },
 
     // null
