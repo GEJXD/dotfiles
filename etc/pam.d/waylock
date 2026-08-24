@@ -1,0 +1,7 @@
+#%PAM-1.0
+# waylock only: do not route through system-auth so failed unlock
+# attempts do not trigger pam_faillock (which would lock the account
+# and make the screen unlock impossible for 10 minutes).
+auth required pam_unix.so
+auth required pam_permit.so
+account required pam_unix.so

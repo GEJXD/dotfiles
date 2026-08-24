@@ -37,6 +37,10 @@ package-list
 !etc/systemd/
 !etc/systemd/logind.conf
 !etc/systemd/sleep.conf
+!etc/default/
+!etc/default/grub
+!etc/pam.d/
+!etc/pam.d/waylock
 !etc/tlp.conf
 !etc/samba/
 !etc/samba/smb.conf.example
