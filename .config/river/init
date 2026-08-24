@@ -5,4 +5,5 @@
 
 # https://codeberg.org/unixchad/kwm
 # https://github.com/gnuunixchad/kwm
+${HOME}/.local/bin/prepare-damblocks-fifo
 /usr/local/bin/kwm &

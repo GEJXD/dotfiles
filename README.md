@@ -65,6 +65,7 @@ The tracked configuration is the source of truth for the active setup:
 - `.config/nvim/` — the active NvChad configuration and plugin lock file.
 - `.config/fcitx5/profile` — the selected keyboard and Pinyin input methods.
 - `.config/swaylock/config` — the shared visible lock-screen indicator and colors.
+- `.local/bin/prepare-damblocks-fifo` — creates kwm's status FIFO before the compositor starts, avoiding a startup-order race.
 - `.config/xdg-desktop-portal-wlr/config` — screenshot output selection.
 - `etc/` — tracked system configuration, including the `isw` module option and the standalone `swaylock` PAM policy.
 - `misc/river-classic-wl-shm-v3.patch` — the local build fix required by the current Wayland protocol package.
@@ -77,4 +78,4 @@ Runtime and private data stays local: browser history and cookies, QQ/OBS state,
 
 - Forked/adapted from [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles) — upstream files remain GPL-3.0, this repo is MIT.
 - Machine-local files are gitignored (`~/.config/git/user.inc`, `proxy.inc`, SSH keys live outside the repo).
-- `fix-local-links.sh` re-applies machine-specific links after `stow -R`.
+- `fix-local-links.sh` re-applies machine-specific links after `stow -R`. The kwm status FIFO is created before compositor startup, and the FIFO writer survives temporary reader disconnects.

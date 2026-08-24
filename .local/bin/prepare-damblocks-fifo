@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+# Create the status FIFO before kwm starts reading its bar configuration.
+
+fifo="${XDG_RUNTIME_DIR}/damblocks.fifo"
+
+[ -p "$fifo" ] && exit 0
+[ -e "$fifo" ] && rm -f "$fifo"
+mkfifo "$fifo"

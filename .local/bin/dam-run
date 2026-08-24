@@ -61,6 +61,7 @@ start_classic() {
 
 start_kwm() {
     # kwm's built-in bar consumes the FIFO; no external dam is used.
+    "$HOME/.local/bin/prepare-damblocks-fifo"
     if ! fifo_running || dam_running || default_running; then
         stop_all
         "$HOME/.local/bin/damblocks" --fifo 9>&- >/dev/null 2>&1 &

@@ -12,12 +12,15 @@ case "$wc" in
         tail -f ${XDG_RUNTIME_DIR}/damblocks.fifo | exec ssh-agent dwl
         ;;
     river-classic)
+        ${HOME}/.local/bin/prepare-damblocks-fifo
         exec ssh-agent river-classic -c ${HOME}/.config/river-classic/init
         ;;
     river)
+        ${HOME}/.local/bin/prepare-damblocks-fifo
         exec ssh-agent river
         ;;
     kwm)
+        ${HOME}/.local/bin/prepare-damblocks-fifo
         exec ssh-agent river -c 'kwm'
         ;;
     sway)

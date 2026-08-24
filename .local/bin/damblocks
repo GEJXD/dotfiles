@@ -41,6 +41,10 @@ case "$1" in
         ;;
 esac
 
+# kwm may briefly close the FIFO while rebuilding its bar. Keep the writer
+# alive so it can continue as soon as kwm opens the FIFO again.
+[ "$mode" = "fifo" ] && trap '' PIPE
+
 DAMBLOCKS_FIFO="${XDG_RUNTIME_DIR}/damblocks.fifo"
 [ ! -p "$DAMBLOCKS_FIFO" ] && (rm -f "$DAMBLOCKS_FIFO"; mkfifo "$DAMBLOCKS_FIFO")
 

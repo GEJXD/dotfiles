@@ -10,6 +10,8 @@
     .working_directory = .home,
 
     .startup_cmds = .{
+        // Create the status FIFO before kwm tries to open its bar reader.
+        .{ "sh", "-c", "${HOME}/.local/bin/prepare-damblocks-fifo" },
         // .{ "swaybg", "-i", "/path/to/wallpaper" },
         // gammastep removed: standard color temperature by default,
         // toggle warm mode with Super+Shift+b
