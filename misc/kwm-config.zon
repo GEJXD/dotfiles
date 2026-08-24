@@ -14,6 +14,10 @@
         // gammastep removed: standard color temperature by default,
         // toggle warm mode with Super+Shift+b
         // every entry is guarded so `reload -k` never spawns duplicates
+        // make the Wayland session visible to systemd user services
+        // (xdg-desktop-portal needs WAYLAND_DISPLAY to open file pickers)
+        .{ "sh", "-c", "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE" },
+        .{ "sh", "-c", "systemctl --user restart xdg-desktop-portal.service" },
         .{ "sh", "-c", "pgrep -x mpd || mpd" },
         .{ "sh", "-c", "pgrep -x kanshi || kanshi" },
         .{ "sh", "-c", "pgrep -x fcitx5 || fcitx5 -d --verbose '*=0'" },

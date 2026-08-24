@@ -5,6 +5,11 @@
 
 spawn="riverctl spawn"
 
+# make the Wayland session visible to systemd user services
+# (xdg-desktop-portal needs WAYLAND_DISPLAY to open file pickers)
+systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+systemctl --user restart xdg-desktop-portal.service 2>/dev/null || true
+
 # always
 $spawn "${HOME}/.local/bin/dam-run river-classic" &
 
