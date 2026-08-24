@@ -18,6 +18,17 @@ DAMBLOCKS="${XDG_RUNTIME_DIR}/damblocks.pid"
     || MENU="dmenu" \
        FIFO="${XDG_RUNTIME_DIR}/xob.fifo"
 
+# osd - write to the wob/xob fifo without blocking.
+# restarts the OSD (wobd) if it died; gives up after 1s if no reader.
+osd() {
+    if [ "$XDG_SESSION_TYPE" = "wayland" ] \
+        && ! pgrep -f '^tail -f .*wob.fifo' > /dev/null; then
+        nohup "${HOME}/.local/bin/wobd" -c "${HOME}/.config/wob/wob-offset.ini" \
+            >/dev/null 2>&1 &
+    fi
+    timeout 1 sh -c 'cat > "$1"' _ "$FIFO" 2>/dev/null
+}
+
 [ "$1" = "sink" ] && target="@DEFAULT_AUDIO_SINK@"
 [ "$1" = "source" ] && target="@DEFAULT_AUDIO_SOURCE@"
 
@@ -73,11 +84,12 @@ parseVolume() {
         echo "$status" \
             | sed 's/[^0-9]//g; s/^0//' \
             > "${XDG_CACHE_HOME}/audio-${target}.level"
-        echo "0" > "$FIFO"
+        echo "0" | osd
     else # When toggling on mute, display 0% progress in wob
         echo "$status" \
             | sed 's/[^0-9]//g; s/^0//' \
-            | tee "$FIFO" "${XDG_CACHE_HOME}/audio-${target}.level"
+            | tee "${XDG_CACHE_HOME}/audio-${target}.level" \
+            | osd
     fi
 }
 

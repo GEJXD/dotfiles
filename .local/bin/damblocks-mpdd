@@ -2,11 +2,13 @@
 # @author nate zhou
 # @since 2025
 # update damblocks's mpd module whenever mpd playing status changes
+# hardened: retries forever instead of exiting (survives mpd restarts);
+# the main damblocks loop also refreshes mpd every 5s as a fallback.
 
 pkill -f 'mpc idle'
 
 while : ; do
-    mpc idle >/dev/null \
-        && kill -45 "$(cat ${XDG_RUNTIME_DIR}/damblocks.pid)" \
-        || break
+    mpc idle >/dev/null 2>&1 \
+        && kill -45 "$(cat ${XDG_RUNTIME_DIR}/damblocks.pid)" 2>/dev/null \
+        || sleep 5
 done

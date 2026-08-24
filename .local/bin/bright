@@ -18,6 +18,17 @@ DAMBLOCKS="${XDG_RUNTIME_DIR}/damblocks.pid"
     || MENU="dmenu" \
        FIFO="${XDG_RUNTIME_DIR}/xob.fifo"
 
+# osd - write to the wob/xob fifo without blocking.
+# restarts the OSD (wobd) if it died; gives up after 1s if no reader.
+osd() {
+    if [ "$XDG_SESSION_TYPE" = "wayland" ] \
+        && ! pgrep -f '^tail -f .*wob.fifo' > /dev/null; then
+        nohup "${HOME}/.local/bin/wobd" -c "${HOME}/.config/wob/wob-offset.ini" \
+            >/dev/null 2>&1 &
+    fi
+    timeout 1 sh -c 'cat > "$1"' _ "$FIFO" 2>/dev/null
+}
+
 # save brightness to XDG_CACHE_DIR for reboot consistency
 BRIGHTNESS="${XDG_CACHE_HOME}/brightness.level"
 
@@ -42,7 +53,8 @@ _EOF_
 parseBrightness() {
     grep 'Current brightness' \
             | tr '()' ' ' | cut -d' ' -f5 | sed 's/%//' \
-            | tee "$FIFO" "$BRIGHTNESS" \
+            | tee "$BRIGHTNESS" \
+            | osd \
         && kill -38 "$(cat $DAMBLOCKS)";
 }
 

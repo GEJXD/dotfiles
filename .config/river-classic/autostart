@@ -28,6 +28,9 @@ pgrep 'kanshi' || $spawn "kanshi" &
 
 pgrep -x mpd || $spawn "mpd" &
 
+# xwayland-satellite: X server for X11 apps (qq, etc.) under river-classic
+pgrep -f 'xwayland-satellite' || $spawn "env DISPLAY=:0 xwayland-satellite" &
+
 pgrep -f 'wl-paste --watch cliphist store' || $spawn "wl-paste --watch cliphist store" &
 
 pgrep 'dunst' || $spawn "dunst" &

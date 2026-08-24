@@ -410,6 +410,7 @@ do
 		# to update item ever n seconds with a offset of m
 		## [ $((sec % n)) -eq m ] && udpate_item
 		[ $((sec % 5 )) -eq 0 ] && update_time 	# update time every 5 seconds
+		[ $((sec % 5)) -eq 2 ] && update_mpd # song info every 5s (offset 2), independent of mpdd
 		[ $((sec % 10)) -eq 0 ] && update_battery
 		[ $((sec % 10)) -eq 0 ] && update_bluetooth
 		[ $((sec % 10)) -eq 0 ] && update_ethernet
