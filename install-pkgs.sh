@@ -92,10 +92,17 @@ install_make() {
 
 install_zig() {
     src_dir="${HOME}/.local/src"
+    dotfiles_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
     for package in $src_zig; do
         check_src
         cd ${src_dir}/${package}
+        if [ "$package" = "river-classic" ] \
+            && [ -f "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch" ] \
+            && git apply --check "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch" \
+            2>/dev/null; then
+            git apply "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch"
+        fi
         sudo zig build -Doptimize=ReleaseSafe --prefix /usr/local install
         cd -
     done

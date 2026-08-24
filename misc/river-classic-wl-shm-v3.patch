@@ -1,0 +1,16 @@
+diff --git a/build.zig b/build.zig
+index fbf9614..dddbb4d 100644
+--- a/build.zig
++++ b/build.zig
+@@ -110,7 +110,10 @@ pub fn build(b: *Build) !void {
+     // old is that river fails to compile.
+     scanner.generate("wl_compositor", 4);
+     scanner.generate("wl_subcompositor", 1);
+-    scanner.generate("wl_shm", 1);
++    // wl_shm bumped to 3: modern wayland.xml (>= 1.22) defines the wl_shm/wl_shm_pool
++    // error enums at since=3; requesting v1 makes the generator skip them, which
++    // breaks compilation of the generated wayland.zig (undeclared 'Error').
++    scanner.generate("wl_shm", 3);
+     scanner.generate("wl_output", 4);
+     scanner.generate("wl_seat", 7);
+     scanner.generate("wl_data_device_manager", 3);

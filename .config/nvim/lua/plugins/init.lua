@@ -1,48 +1,28 @@
--- vim:ft=lua
--- nvim/lua/plugins/init.lua
--- @author nate zhou
--- @since 2025,2026
+return {
+  {
+    "stevearc/conform.nvim",
+    -- event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
+  },
 
--- enables the experimental lua module loader, see `:h loader`
-vim.loader.enable()
+  -- These are some examples, uncomment them if you want to see them work!
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require "configs.lspconfig"
+    end,
+  },
 
-local vim = vim
-local Plug = vim.fn['plug#']
+  -- test new blink
+  -- { import = "nvchad.blink.lazyspec" },
 
-vim.call('plug#begin')
-
-Plug('norcalli/nvim-colorizer.lua')
-
-Plug('nvim-treesitter/nvim-treesitter', { ['branch'] = 'main' })
-
-Plug('nvim-treesitter/nvim-treesitter-context')
-
-Plug('neoclide/coc.nvim', { ['branch'] = 'release' })
-
-Plug('lukas-reineke/indent-blankline.nvim')
-
-Plug('MeanderingProgrammer/render-markdown.nvim')
-
-Plug('tpope/vim-fugitive')
-
-Plug('voldikss/vim-floaterm')
-Plug('ptzz/lf.vim')
-
-Plug('h-hg/fcitx.nvim')
-
-Plug('3rd/image.nvim')
-
-Plug('gnuunixchad/toggle-term.nvim')
-
-vim.call('plug#end')
-
-require('plugins.coc')
-require('plugins.nvim-colorizer')
-require('plugins.nvim-treesitter')
-require('plugins.nvim-treesitter-context')
-require('plugins.indent-blankline')
-require('plugins.render-markdown')
-require('plugins.vim-floaterm')
-require('plugins.lf')
-require('plugins.image')
-require('plugins.toggle-term')
+  -- {
+  -- 	"nvim-treesitter/nvim-treesitter",
+  -- 	opts = {
+  -- 		ensure_installed = {
+  -- 			"vim", "lua", "vimdoc",
+  --      "html", "css"
+  -- 		},
+  -- 	},
+  -- },
+}

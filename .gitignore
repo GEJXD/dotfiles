@@ -343,3 +343,20 @@ package-list
 !.config/zathura/bindings.rc
 !.config/zathura/colors.rc
 !.config/electron-flags.conf
+
+# Current machine restore coverage
+!fix-local-links.sh
+!etc/modprobe.d/
+!etc/modprobe.d/isw-ec_sys.conf
+!.config/fcitx5/profile
+!.config/fcitx5/conf/chttrans.conf
+!.config/xdg-desktop-portal-wlr/
+!.config/xdg-desktop-portal-wlr/config
+!.config/nvim/lazy-lock.json
+!.config/nvim/lua/autocmds.lua
+!.config/nvim/lua/chadrc.lua
+!.config/nvim/lua/mappings.lua
+!.config/nvim/lua/options.lua
+!.config/nvim/lua/configs/
+!.config/nvim/lua/configs/*
+!.config/nvim/lua/plugins/*

@@ -90,7 +90,8 @@ mkdir -p ${HOME}/.cache/zig
         )
 
 # use current dir as stow dir, instead of DOTFILES_LOCAL, which may not exist
-stow -R --adopt -d "$script_dir" -t "$HOME" .
+stow -R --adopt --ignore='^\.ssh' -d "$script_dir" -t "$HOME" .
+[ -x "${script_dir}/fix-local-links.sh" ] && "${script_dir}/fix-local-links.sh"
 OLLAMA="${HOME}/pkg/ollama"
 [ -d "$OLLAMA" ] && stow -R --adopt -d "$OLLAMA" -t "$HOME" .
 

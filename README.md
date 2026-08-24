@@ -48,14 +48,31 @@ mkdir -p ~/.{cache,config/"Code - OSS"}
 # link dotfiles
 stow -t ~ . --adopt
 ./install-user.sh        # user-space setup (zsh, crontab, configs)
+./fix-local-links.sh      # repair machine-local links after stow
 
 # packages (WSL/physical aware)
 ./install-pkgs.sh --install --base
 sudo ./install-root.sh
 ```
 
+## Restore Coverage
+
+The tracked configuration is the source of truth for the active setup:
+
+- `.config/kwm/config.zon` — current kwm runtime configuration, including output switching.
+- `.config/river-classic/` and `.config/kanshi/` — compositor bindings and the 2K internal + 1080p HDMI layout.
+- `.config/nvim/` — the active NvChad configuration and plugin lock file.
+- `.config/fcitx5/profile` — the selected keyboard and Pinyin input methods.
+- `.config/xdg-desktop-portal-wlr/config` — screenshot output selection.
+- `etc/` — tracked system configuration, including the `isw` module option.
+- `misc/river-classic-wl-shm-v3.patch` — the local build fix required by the current Wayland protocol package.
+
+`install-user.sh` runs `fix-local-links.sh` after stow. It keeps private SSH keys and generated NvChad plugin data outside the repository while restoring the tracked links.
+
+Runtime and private data stays local: browser history and cookies, QQ/OBS state, fcitx user dictionaries, calendar/news caches, package databases, SSH/GPG private keys, and proxy/account files.
+
 ## Notes
 
 - Forked/adapted from [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles) — upstream files remain GPL-3.0, this repo is MIT.
 - Machine-local files are gitignored (`~/.config/git/user.inc`, `proxy.inc`, SSH keys live outside the repo).
-- `~/doc/heart/fix-local-links.sh` re-applies machine-specific symlinks after `stow -R`.
+- `fix-local-links.sh` re-applies machine-specific links after `stow -R`.
