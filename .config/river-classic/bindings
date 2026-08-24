@@ -98,8 +98,7 @@ $map normal ${mod}+Shift t                  send-layout-cmd "$tiler" "main-locat
 $map normal $mod u                          send-layout-cmd "$tiler" "main-location bottom"
 $map normal ${mod}+Shift u                  send-layout-cmd "$tiler" "main-location top"
 $map normal $mod m                          send-layout-cmd "$tiler" "main-location monocle"
-$map normal $mod o                          send-layout-cmd "$tiler" "main-location deck"
-$map normal $mod g                          send-layout-cmd "$tiler" "main-location grid"
+$map normal $mod o                          send-layout-cmd "$tiler" "main-location deck"$map normal $mod g                          send-layout-cmd "$tiler" "main-location grid"
 
 $map normal $mod Space                      toggle-float
 $map normal $mod e                          toggle-fullscreen
@@ -141,3 +140,11 @@ $map-pointer normal $mod BTN_MIDDLE         toggle-float
 all_tags=$(((1 << 32) - 1))
 $map normal $mod 0                          set-focused-tags $all_tags
 $map normal ${mod}+Shift 0                  set-view-tags $all_tags
+
+# multi-monitor: switch focus between outputs
+$map normal ${mod}+Control j                  focus-output next
+$map normal ${mod}+Control k                  focus-output previous
+
+# move focused window to the other output
+$map normal ${mod}+Shift Right                send-to-output next
+$map normal ${mod}+Shift Left                 send-to-output previous
