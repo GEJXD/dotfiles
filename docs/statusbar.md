@@ -2,11 +2,11 @@
 
 状态栏由 **damblocks**（纯 POSIX shell 的状态行生成器）提供，按合成器栈以两种方式消费：
 
-| 栈 | 消费方式 | 启动入口 |
-|---|---|---|
-| kwm | kwm 内置 bar 直接读 FIFO | `.local/bin/damblocks --fifo` |
-| river-classic | dam 渲染 stdin | `damblocks \| dam` |
-| sway（备用） | swaybar 读 stdin | `damblocks`（`sway/bar` 的 `status_command`） |
+| 栈            | 消费方式                 | 启动入口                                      |
+|---------------|--------------------------|-----------------------------------------------|
+| kwm           | kwm 内置 bar 直接读 FIFO | `.local/bin/damblocks --fifo`                 |
+| river-classic | dam 渲染 stdin           | `damblocks \| dam`                            |
+| sway（备用）  | swaybar 读 stdin         | `damblocks`（`sway/bar` 的 `status_command`） |
 
 ## 1. 角色分工
 
@@ -73,13 +73,13 @@ pkill -x -SIGUSR1 dam
 
 ## 6. 相关配置
 
-| 文件 | 作用 |
-|---|---|
-| `.local/bin/damblocks` | 状态行生成器 |
-| `.local/bin/damblocks-mpdd` | MPD 可视化模块 |
-| `.local/bin/dam-run` | 栈模式协调入口 |
-| `.local/bin/prepare-damblocks-fifo` | FIFO 创建 |
-| `.config/kwm/config.zon` | kwm bar 配置（含 FIFO 路径） |
-| `.config/sway/bar` | swaybar 配置（`status_command damblocks`） |
-| `etc/udev/rules.d/*` | 模块信号触发 |
-| `.config/crontab.example` | 定时刷新 |
+| 文件                                | 作用                                       |
+|-------------------------------------|--------------------------------------------|
+| `.local/bin/damblocks`              | 状态行生成器                               |
+| `.local/bin/damblocks-mpdd`         | MPD 可视化模块                             |
+| `.local/bin/dam-run`                | 栈模式协调入口                             |
+| `.local/bin/prepare-damblocks-fifo` | FIFO 创建                                  |
+| `.config/kwm/config.zon`            | kwm bar 配置（含 FIFO 路径）               |
+| `.config/sway/bar`                  | swaybar 配置（`status_command damblocks`） |
+| `etc/udev/rules.d/*`                | 模块信号触发                               |
+| `.config/crontab.example`           | 定时刷新                                   |

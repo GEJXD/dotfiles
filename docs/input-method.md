@@ -6,12 +6,12 @@
 
 **配置文件**（`.config/fcitx5/`）：
 
-| 文件 | 作用 |
-|---|---|
-| `profile` | 启用的输入法组：默认 `keyboard-us` + `pinyin`，默认输入法 `pinyin` |
-| `conf/pinyin.conf` | 拼音引擎选项 |
-| `conf/chttrans.conf` | 简繁转换 |
-| `conf/*.conf` | 其他引擎/模块选项 |
+| 文件                 | 作用                                                               |
+|----------------------|--------------------------------------------------------------------|
+| `profile`            | 启用的输入法组：默认 `keyboard-us` + `pinyin`，默认输入法 `pinyin` |
+| `conf/pinyin.conf`   | 拼音引擎选项                                                       |
+| `conf/chttrans.conf` | 简繁转换                                                           |
+| `conf/*.conf`        | 其他引擎/模块选项                                                  |
 
 **启动**：在 autostart 中启动 `fcitx5 -d --verbose '*=0'`（kwm 与 river-classic 均如此；sway 用 `exec_always`）。
 
@@ -28,12 +28,12 @@
 
 键盘重复由各栈的输入管理器配置，四处配置保持一致：**rate 30 / delay 200ms**。
 
-| 栈 | 配置位置 | 语法 |
-|---|---|---|
-| kwm 应用内键盘 | `.config/kwim/config.zon` | `input_device_rules[].repeat_info = .{ .rate = 30, .delay = 200 }` |
-| kwm 快捷键重复 | `.config/kwm/config.zon` | `bindings.repeat_info = .{ .rate = 30, .delay = 200 }` |
-| river-classic | `.config/river-classic/init` | `riverctl set-repeat 30 100` |
-| sway | `.config/sway/config` | `input "type:keyboard" { repeat_delay 100; repeat_rate 30 }` |
+| 栈             | 配置位置                     | 语法                                                               |
+|----------------|------------------------------|--------------------------------------------------------------------|
+| kwm 应用内键盘 | `.config/kwim/config.zon`    | `input_device_rules[].repeat_info = .{ .rate = 30, .delay = 200 }` |
+| kwm 快捷键重复 | `.config/kwm/config.zon`     | `bindings.repeat_info = .{ .rate = 30, .delay = 200 }`             |
+| river-classic  | `.config/river-classic/init` | `riverctl set-repeat 30 100`                                       |
+| sway           | `.config/sway/config`        | `input "type:keyboard" { repeat_delay 100; repeat_rate 30 }`       |
 
 ### kwim（kwm 的输入管理器）
 
@@ -53,19 +53,19 @@ kwim apply input-device --repeat-info 30,200   # 对单设备临时应用
 
 ## 3. 键盘布局
 
-| 栈 | 配置 |
-|---|---|
+| 栈            | 配置                                                                                    |
+|---------------|-----------------------------------------------------------------------------------------|
 | river-classic | `riverctl keyboard-layout us`（`init` 中；`.config/layout.xkb` 为备用完整映射，已注释） |
-| kwm | 由 kwim 的 `xkb_keyboard_rules` 控制（当前未设置，用默认 us） |
-| sway | `.config/sway/config` 中无显式布局（默认 us） |
+| kwm           | 由 kwim 的 `xkb_keyboard_rules` 控制（当前未设置，用默认 us）                           |
+| sway          | `.config/sway/config` 中无显式布局（默认 us）                                           |
 
 ## 4. 相关脚本
 
-| 脚本 | 作用 |
-|---|---|
-| `.local/bin/capslock` | CapsLock 状态通知 |
-| `.local/bin/wsk` | wshowkeys 按键可视化开关（`Super+Ctrl+s`） |
-| `.local/bin/draw-keyboard` | 键盘布局绘图辅助 |
+| 脚本                       | 作用                                       |
+|----------------------------|--------------------------------------------|
+| `.local/bin/capslock`      | CapsLock 状态通知                          |
+| `.local/bin/wsk`           | wshowkeys 按键可视化开关（`Super+Ctrl+s`） |
+| `.local/bin/draw-keyboard` | 键盘布局绘图辅助                           |
 
 ## 5. 常见问题
 

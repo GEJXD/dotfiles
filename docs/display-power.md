@@ -51,12 +51,12 @@ account required pam_unix.so
 
 **配置文件**：`.config/swayidle/config`
 
-| 时间 | 动作 |
-|---|---|
-| 600s | 降低亮度到 4%（`brightnessctl set 4% -s`），恢复时还原 |
-| 900s | `swaylock -f`（锁屏） |
-| 960s | 屏幕关闭（`brightnessctl set 0%`），恢复时 `kanshi reload` + 还原亮度 |
-| before-sleep | `swaylock -f` |
+| 时间         | 动作                                                                  |
+|--------------|-----------------------------------------------------------------------|
+| 600s         | 降低亮度到 4%（`brightnessctl set 4% -s`），恢复时还原                |
+| 900s         | `swaylock -f`（锁屏）                                                 |
+| 960s         | 屏幕关闭（`brightnessctl set 0%`），恢复时 `kanshi reload` + 还原亮度 |
+| before-sleep | `swaylock -f`                                                         |
 
 **关键点**：使用 `swayidle -w`，保证锁屏命令完成后再进入休眠，避免解锁与休眠竞态。
 
@@ -68,11 +68,11 @@ account required pam_unix.so
 
 **系统配置**：
 
-| 文件 | 内容 |
-|---|---|
+| 文件                                           | 内容                                                              |
+|------------------------------------------------|-------------------------------------------------------------------|
 | `/etc/default/grub`（仓库 `etc/default/grub`） | `resume=UUID=91e919ba-bbc6-4d18-aa3a-9fc64057abfa`（swap LVM 卷） |
-| `etc/systemd/sleep.conf` | `HibernateMode=shutdown` |
-| `etc/mkinitcpio.conf` | hooks 含 `sd-encrypt`、`lvm2`，保证 initramfs 能解析 LVM/加密卷 |
+| `etc/systemd/sleep.conf`                       | `HibernateMode=shutdown`                                          |
+| `etc/mkinitcpio.conf`                          | hooks 含 `sd-encrypt`、`lvm2`，保证 initramfs 能解析 LVM/加密卷   |
 
 > 历史问题：曾用 `resume=/dev/mapper/vg0-swap`，initramfs 阶段解析失败导致休眠恢复退化为冷启动；改用 UUID 后修复。修改 grub 后需 `sudo grub-mkconfig -o /boot/grub/grub.cfg` 并重新生成 initramfs。
 
@@ -84,12 +84,12 @@ account required pam_unix.so
 
 ## 6. 相关脚本
 
-| 脚本 | 作用 |
-|---|---|
-| `.local/bin/bright` | 背光控制（`brightnessctl` 封装，支持 OSD） |
-| `.local/bin/audio` | 音量控制（含 OSD） |
-| `.local/bin/wobd` / `xobd` | OSD 守护进程 |
-| `.local/bin/mag` | 放大镜 |
+| 脚本                       | 作用                                       |
+|----------------------------|--------------------------------------------|
+| `.local/bin/bright`        | 背光控制（`brightnessctl` 封装，支持 OSD） |
+| `.local/bin/audio`         | 音量控制（含 OSD）                         |
+| `.local/bin/wobd` / `xobd` | OSD 守护进程                               |
+| `.local/bin/mag`           | 放大镜                                     |
 
 ## 7. 常见排查
 

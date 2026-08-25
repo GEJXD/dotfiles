@@ -55,30 +55,30 @@ exec ssh-agent river-classic -c ${HOME}/.config/river-classic/init
 
 ### river-classic autostart（`.config/river-classic/autostart`）
 
-| 组件 | 说明 |
-|---|---|
-| `systemctl --user import-environment ...` | 把 Wayland 会话变量导入 systemd 用户环境 |
+| 组件                                                  | 说明                                            |
+|-------------------------------------------------------|-------------------------------------------------|
+| `systemctl --user import-environment ...`             | 把 Wayland 会话变量导入 systemd 用户环境        |
 | `systemctl --user restart xdg-desktop-portal.service` | 修复 Electron 文件选择器（portal 需要环境变量） |
-| `dam-run river-classic` | 状态栏（damblocks \| dam） |
-| `swaybg -i ~/.local/share/wallpaper` | 壁纸 |
-| `foots` | 重启由脚本决定的终端 |
-| `mbs-cron` | 邮件同步 |
-| `swayidle -w` | 空闲守护（不存在才启动） |
-| `kanshi` | 显示器自动配置（不存在才启动） |
-| `mpd` | 音乐守护 |
-| `xwayland-satellite` | X11 应用（QQ 等）的 X 服务 |
-| `wl-paste --watch cliphist store` | 剪贴板历史 |
-| `dunst` | 通知守护 |
-| `wobd` | 音量 OSD 守护 |
-| `fcitx5 -d` | 输入法 |
+| `dam-run river-classic`                               | 状态栏（damblocks \| dam）                      |
+| `swaybg -i ~/.local/share/wallpaper`                  | 壁纸                                            |
+| `foots`                                               | 重启由脚本决定的终端                            |
+| `mbs-cron`                                            | 邮件同步                                        |
+| `swayidle -w`                                         | 空闲守护（不存在才启动）                        |
+| `kanshi`                                              | 显示器自动配置（不存在才启动）                  |
+| `mpd`                                                 | 音乐守护                                        |
+| `xwayland-satellite`                                  | X11 应用（QQ 等）的 X 服务                      |
+| `wl-paste --watch cliphist store`                     | 剪贴板历史                                      |
+| `dunst`                                               | 通知守护                                        |
+| `wobd`                                                | 音量 OSD 守护                                   |
+| `fcitx5 -d`                                           | 输入法                                          |
 
 ### kwm 启动命令（`.config/kwm/config.zon` 的 `startup_cmds`）
 
-| 命令 | 说明 |
-|---|---|
-| `systemctl --user import-environment ...` | 导入会话环境 |
-| `systemctl --user restart xdg-desktop-portal.service` | 修复 portal |
-| `dam-run kwm` | 状态栏（damblocks --fifo） |
+| 命令                                                  | 说明                       |
+|-------------------------------------------------------|----------------------------|
+| `systemctl --user import-environment ...`             | 导入会话环境               |
+| `systemctl --user restart xdg-desktop-portal.service` | 修复 portal                |
+| `dam-run kwm`                                         | 状态栏（damblocks --fifo） |
 
 每条启动命令都有防重复守卫，`reload -k` 不会重复启动。
 
@@ -97,11 +97,11 @@ exiland -dwl            # dwl：killall dwl
 
 ## 4. 配置重载
 
-| 栈 | 按键 | 效果 |
-|---|---|---|
-| kwm | `Super+Shift+r` | 重载 `.config/kwm/config.zon` |
-| river-classic | `Super+Shift+r` | 重新执行 `init`（全部重载） |
-| sway | `Super+Shift+r` | 重载 sway 配置 |
+| 栈            | 按键            | 效果                          |
+|---------------|-----------------|-------------------------------|
+| kwm           | `Super+Shift+r` | 重载 `.config/kwm/config.zon` |
+| river-classic | `Super+Shift+r` | 重新执行 `init`（全部重载）   |
+| sway          | `Super+Shift+r` | 重载 sway 配置                |
 
 ## 5. 机器本地链接（`fix-local-links.sh`）
 
