@@ -16,6 +16,14 @@ return {
   -- test new blink
   -- { import = "nvchad.blink.lazyspec" },
 
+  {
+    "Kicamon/markdown-table-mode.nvim",
+    ft = { "markdown" },
+    config = function()
+      require("markdown-table-mode").setup()
+    end,
+  },
+
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
   -- 	opts = {
