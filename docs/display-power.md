@@ -10,12 +10,12 @@
 
 ```ini
 profile hdmi {
-    output eDP-1 position 0,0
+    output eDP-1 mode --custom 2560x1440@165.003Hz position 0,0
     output HDMI-A-1 enable position 2560,0
 }
 ```
 
-另有 `nomad`、`home`（DP-1 / DP-2）等备用 profile。
+另有 `nomad`、`home`（DP-1 / DP-2）等备用 profile。eDP-1 内屏默认 2K（2560x1440@165Hz）高刷新，外部显示器保持各自原有模式。
 
 **配置方式**：
 - 编辑 profile 后 `kanshi reload` 或重启 kanshi（`pgrep kanshi || kanshi` 由 autostart 保证）。
