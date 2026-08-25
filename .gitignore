@@ -13,6 +13,9 @@ package-list
 !misc/*
 !install-*.sh
 
+!docs/
+!docs/*
+
 !mus/
 !mus/.mpdignore
 

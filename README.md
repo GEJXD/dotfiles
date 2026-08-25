@@ -2,6 +2,8 @@
 
 My Arch Linux dotfiles, powered by [river](https://github.com/riverwm/river) (Wayland).
 
+Documentation lives in [`docs/`](docs/README.md): keybindings, software roles, configuration methods and startup flow.
+
 ## Stack
 
 | | |

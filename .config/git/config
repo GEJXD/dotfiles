@@ -14,7 +14,7 @@
     quotepath = false
 
 [commit]
-    gpgsign = true
+	gpgsign = false
 
 [diff]
     tool = nvimdiff
