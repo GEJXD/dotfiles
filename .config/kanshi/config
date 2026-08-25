@@ -4,7 +4,7 @@
 # @since 2025,2026
 
 profile nomad {
-    output eDP-1 mode --custom 2560x1440@165.003Hz
+    output eDP-1 mode --custom 2560x1440@165.003Hz scale 1.2
 }
 
 profile home {
