@@ -16,7 +16,7 @@ riverctl keyboard-layout us
 # input
 riverctl focus-follows-cursor disabled
 
-riverctl set-repeat 30 200
+riverctl set-repeat 30 100
 
 riverctl hide-cursor timeout 3000
 riverctl hide-cursor when-typing enabled

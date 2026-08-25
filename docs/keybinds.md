@@ -426,7 +426,7 @@ river-classic 的 `modes` 与 kwm 的模式基本相同：
 |---|---|---|
 | kwm 应用内键盘 | `.config/kwim/config.zon`（`repeat_info`） | rate 30 / delay 200ms |
 | kwm 快捷键重复 | `.config/kwm/config.zon`（`bindings.repeat_info`） | rate 30 / delay 200ms |
-| river-classic | `.config/river-classic/init`（`riverctl set-repeat 30 200`） | rate 30 / delay 200ms |
+| river-classic | `.config/river-classic/init`（`riverctl set-repeat 30 100`） | rate 30 / delay 100ms |
 | sway | `.config/sway/config`（`input "type:keyboard"`） | rate 30 / delay 200ms |
 
 详见 [input-method.md](input-method.md)。

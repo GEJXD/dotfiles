@@ -32,8 +32,8 @@
 |---|---|---|
 | kwm 应用内键盘 | `.config/kwim/config.zon` | `input_device_rules[].repeat_info = .{ .rate = 30, .delay = 200 }` |
 | kwm 快捷键重复 | `.config/kwm/config.zon` | `bindings.repeat_info = .{ .rate = 30, .delay = 200 }` |
-| river-classic | `.config/river-classic/init` | `riverctl set-repeat 30 200` |
-| sway | `.config/sway/config` | `input "type:keyboard" { repeat_delay 200; repeat_rate 30 }` |
+| river-classic | `.config/river-classic/init` | `riverctl set-repeat 30 100` |
+| sway | `.config/sway/config` | `input "type:keyboard" { repeat_delay 100; repeat_rate 30 }` |
 
 ### kwim（kwm 的输入管理器）
 

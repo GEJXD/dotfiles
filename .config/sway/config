@@ -14,7 +14,7 @@ xwayland disable
 
 output 'eDP-1' mode --custom 1920x1080@60.000Hz pos 0 0
 input "type:keyboard" {
-	repeat_delay 200
+	repeat_delay 100
 	repeat_rate 30
 }
 input "type:touchpad" {
