@@ -21,9 +21,10 @@ vim.lsp.config("clangd", {
   -- 对应 VS Code 的 "clangd.runLinter": "none"（关掉每次编辑触发的 lint）
   diagnostics = { enable = false },
   root_dir = function(buf)
-    return vim.fs.root(buf, "compile_commands.json")
-      or vim.fs.root(buf, ".git")
-      or vim.expand "%:p:h"
+    local fname = vim.api.nvim_buf_get_name(buf)
+    return vim.fs.root(fname, "compile_commands.json")
+      or vim.fs.root(fname, ".git")
+      or vim.fn.fnamemodify(fname, ":p:h")
   end,
 })
 
