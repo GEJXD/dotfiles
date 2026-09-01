@@ -11,9 +11,9 @@ set -x
 rsync --dry-run -avh --delete-after --progress \
     --exclude=doc/heart/ \
     --exclude=vid/extra/ \
-    --exclude="doc/heart/.config/fcitx/dbus/" \
-    --exclude="doc/heart/.config/ibus/" \
-    --exclude="doc/heart/.ssh/agent/" \
+    --exclude="doc/heart/dotfiles/.config/fcitx/dbus/" \
+    --exclude="doc/heart/dotfiles/.config/ibus/" \
+    --exclude="doc/heart/dotfiles/.ssh/agent/" \
     --exclude=".zig-cache" \
     $MY_SOURCE_PATH $MY_DESTINATION
 set +x
@@ -23,9 +23,9 @@ if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     rsync -avh --delete-after --progress \
         --exclude=doc/heart/ \
         --exclude=vid/extra/ \
-        --exclude="doc/heart/.config/fcitx/dbus/" \
-        --exclude="doc/heart/.config/ibus/" \
-        --exclude="doc/heart/.ssh/agent/" \
+        --exclude="doc/heart/dotfiles/.config/fcitx/dbus/" \
+        --exclude="doc/heart/dotfiles/.config/ibus/" \
+        --exclude="doc/heart/dotfiles/.ssh/agent/" \
         --exclude=".zig-cache" \
         $MY_SOURCE_PATH $MY_DESTINATION
 else

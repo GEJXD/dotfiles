@@ -11,11 +11,11 @@ set -x
 # concatenated path. The simplest way is to not quote the path, but make sure
 # there aren't spaces or slash as a part of the file's pathname.
 rsync --dry-run -avh --delete-after --progress \
-      --include="doc/heart/.config/Code - OSS/User/*" \
-      --exclude="doc/heart/.config/Code - OSS/" \
-      --exclude="doc/heart/.config/fcitx/dbus/" \
-      --exclude="doc/heart/.config/ibus/" \
-      --exclude="doc/heart/.ssh/agent/" \
+      --include="doc/heart/dotfiles/.config/Code - OSS/User/*" \
+      --exclude="doc/heart/dotfiles/.config/Code - OSS/" \
+      --exclude="doc/heart/dotfiles/.config/fcitx/dbus/" \
+      --exclude="doc/heart/dotfiles/.config/ibus/" \
+      --exclude="doc/heart/dotfiles/.ssh/agent/" \
       --exclude=".zig-cache" \
       $my_source_path $my_destination
 set +x
@@ -23,11 +23,11 @@ set +x
 read -p "Continue? (y/n): " choice
 if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     rsync -avh --delete-after --progress \
-        --include="doc/heart/.config/Code - OSS/User/***" \
-        --exclude="doc/heart/.config/Code - OSS/*" \
-        --exclude="doc/heart/.config/fcitx/dbus/" \
-        --exclude="doc/heart/.config/ibus/" \
-        --exclude="doc/heart/.ssh/agent/" \
+        --include="doc/heart/dotfiles/.config/Code - OSS/User/***" \
+        --exclude="doc/heart/dotfiles/.config/Code - OSS/*" \
+        --exclude="doc/heart/dotfiles/.config/fcitx/dbus/" \
+        --exclude="doc/heart/dotfiles/.config/ibus/" \
+        --exclude="doc/heart/dotfiles/.ssh/agent/" \
         --exclude=".zig-cache" \
         $my_source_path $my_destination
 else

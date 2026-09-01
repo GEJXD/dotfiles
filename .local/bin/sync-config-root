@@ -1,27 +1,31 @@
 #!/usr/bin/env bash
 # @author nate zhou
 # @since 2025,2026
+# sync-config-root - mirror the shell configuration into /root and stow it there
+
+# ~/.local/bin is a symlink into the repository, so the checkout can live anywhere
+repo="$(CDPATH= cd -P -- "$(dirname -- "$0")/../.." && pwd)"
 
 sudo rsync -a --delete-after --progress \
-    $HOME/doc/heart/{.profile,.bashrc,.stow-local-ignore} \
+    "$repo"/{.profile,.bashrc,.stow-local-ignore} \
     /root/heart &
 
 sudo rsync -a --delete-after --progress \
-    $HOME/doc/heart/.config/bash/{aliases.bash,functions.bash,completions} \
+    "$repo/.config/bash"/{aliases.bash,functions.bash,completions} \
     /root/heart/.config/bash &
 
 [ -d /root/heart/.config/shell ] || sudo mkdir -p /root/heart/.config/shell &
 
 sudo rsync -a --delete-after --progress \
-    $HOME/doc/heart/.config/shell/{aliases.sh,functions.sh,profile.sh,teleport.sh} \
+    "$repo/.config/shell"/{aliases.sh,functions.sh,profile.sh,teleport.sh} \
     /root/heart/.config/shell &
 
 sudo rsync -a --delete-after --progress \
-    $HOME/doc/heart/.config/{readline,fzf,lf,vim,dircolors} \
+    "$repo/.config"/{readline,fzf,lf,vim,dircolors} \
     /root/heart/.config &
 
 sudo rsync -a --delete-after --progress \
-    $HOME/doc/heart/.local/bin/scope \
+    "$repo/.local/bin/scope" \
     /root/heart/.config/lf/scope &
 
 wait

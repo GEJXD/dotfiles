@@ -18,9 +18,9 @@ else
 fi
 
 sync_cmd="rsync -avh --delete-after --progress \
-      --exclude="doc/heart/.config/fcitx/dbus/" \
-      --exclude="doc/heart/.config/ibus/" \
-      --exclude="doc/heart/.ssh/agent/" \
+      --exclude="doc/heart/dotfiles/.config/fcitx/dbus/" \
+      --exclude="doc/heart/dotfiles/.config/ibus/" \
+      --exclude="doc/heart/dotfiles/.ssh/agent/" \
       --exclude=".zig-cache/" \
       /home/${USER}/{doc,mus,pic,vid,pkg} \
       ${remote}:/home/${USER};"

@@ -2,9 +2,11 @@
 # @author nate zhou
 # @since 2024,2025,2026
 # heart - search and edit dotfiles tracked by git in a dynamic menu
-# It's called heart because all my dotfiles are in ~/doc/heart managed by stow.
+# It's called heart because all my dotfiles are under ~/doc/heart managed by stow.
 
-HEART="${HOME}/doc/heart"
+# Resolve the repository from this script's own location, so the checkout can
+# live anywhere: ~/.local/bin is a symlink into the repository.
+repo="$(CDPATH= cd -P -- "$(dirname -- "$0")/../.." && pwd)"
 menu_prompt="$(basename $0)"
 
 if [ "$TERM" = "dvtm-256color" ] ; then
@@ -22,8 +24,7 @@ else
 fi
 
 list_tracked_files() {
-    git --git-dir="$HEART"/.git --work-tree="$HEART" \
-        ls-tree -r HEAD --name-only \
+    git -C "$repo" ls-tree -r HEAD --name-only \
         | grep -ve .png$ \
                -ve .local/share/lockscreen$ \
                -ve ^LICENSE$ \
@@ -42,4 +43,4 @@ menu() {
 
 selected_file="$(list_tracked_files | menu)"
 
-[ -n "$selected_file" ] && $term $EDITOR "$selected_file"
+[ -n "$selected_file" ] && $term $EDITOR "$repo/$selected_file"

@@ -1,46 +1,40 @@
 #!/usr/bin/sh
 # @author nate zhou
 # @since 2024,2025,2026
+# sync-config - write the per-host package lists, crontab backup and address excerpt
 
-HEART="$HOME/doc/heart"
-chmod 700 "$HEART" # deny go permission to exclude for termux syncing
-DOTFILES="$HOME/doc/unixchad/dotfiles"
+# ~/doc/heart holds machine-local state around the repository: the package lists
+# read by install-root.sh and the files the cron jobs write to.
+heart="${HOME}/doc/heart"
 hostname="$(cat /etc/hostname)"
 
+chmod 700 "$heart" # deny go permission to exclude for termux syncing
 
-read -p "Continue? (y/n): " choice
-if [ $choice = "y" ] || [ $choice = "Y" ]; then
-    pacman -Qmq | sort > "$HEART"/package-list/aur-${hostname}.list &
-    pacman -Qenq | sort > "$HEART"/package-list/arch-${hostname}.list &
+# under cron there is no terminal to answer on, and nothing here is destructive
+read -p "Continue? (y/n): " choice || choice="y"
+if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+    mkdir -p "${heart}/package-list"
+    pacman -Qmq | sort > "${heart}/package-list/aur-${hostname}.list" &
+    pacman -Qenq | sort > "${heart}/package-list/arch-${hostname}.list" &
     command -v code >/dev/null 2>&1 \
-        && command code --list-extensions > "$HEART"/package-list/code-${hostname}.list 2>/dev/null &
+        && command code --list-extensions > "${heart}/package-list/code-${hostname}.list" 2>/dev/null &
 
-    crontab -l > "$HEART"/.config/crontab.backup \
+    # sync-config-cron throttles on this file and install-user.sh installs it
+    crontab -l > "${HOME}/.config/crontab.backup" \
         && echo "crontab backup done" || echo "crontab backup failed"
 
     # censor address book for screen casting
-    grep -n "##############################below-are-private##############################" \
-        $HOME/doc/heart/.local/share/address/address \
-        | cut -d: -f1 \
-        | xargs -I {} sed -n '1,{}p' $HOME/doc/heart/.local/share/address/address \
-        > $HOME/doc/heart/.local/share/address/address-record \
-        && echo "address-record updated" || echo "address-record update failed"
-
-    # unixchad
-    if [ ! -d "$DOTFILES" ]; then
-        git clone "$HEART" "$DOTFILES" &
+    address="${HOME}/.local/share/address/address"
+    if [ -f "$address" ]; then
+        grep -n "##############################below-are-private##############################" \
+            "$address" \
+            | cut -d: -f1 \
+            | xargs -I {} sed -n '1,{}p' "$address" \
+            > "${address}-record" \
+            && echo "address-record updated" || echo "address-record update failed"
     fi
-    git --git-dir $DOTFILES/.git --work-tree $DOTFILES pull \
-        && echo "heart is pulled" \
-        || echo "heart pulling failed"
-    chmod 750 "$DOTFILES"
-    rsync -a --delete-after \
-        "${HEART}/.local/share/nvim/" "${DOTFILES}/.local/share/nvim/" &
-    rsync -a --delete-after ${HEART}/package-list ${DOTFILES}/ &
-    wait
 
-    # deny permission for user termux(in the $USER's group)
-    chmod 700 "${DOTFILES}/.local/share/nvim/"
+    wait
 else
     echo "aborted"
     exit 0
