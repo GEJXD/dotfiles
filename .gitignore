@@ -103,7 +103,6 @@ package-list
 !.local/
 !.local/bin
 !.local/bin/*
-!.local/bin/qutebrowser/*
 !.local/share/
 !.local/share/address
 !.local/share/address/address.example
@@ -260,8 +259,6 @@ package-list
 !.config/proxy/git/proxy.inc.example
 !.config/proxy/newsboat/
 !.config/proxy/newsboat/proxy.conf.example
-!.config/proxy/qutebrowser/
-!.config/proxy/qutebrowser/proxy.py.example
 !.config/proxy/ssh/
 !.config/proxy/ssh/proxy.conf.example
 !.config/proxy/yt-dlp/
@@ -269,18 +266,6 @@ package-list
 !.config/qt5ct/qt5ct.conf
 !.config/qt6ct/
 !.config/qt6ct/qt6ct.conf
-!.config/qutebrowser/
-!.config/qutebrowser/config.py
-!.config/qutebrowser/proxy.py.example
-!.config/qutebrowser/colors.py
-!.config/qutebrowser/bindings.py
-!.config/qutebrowser/search.py.example
-!.config/qutebrowser/userscripts
-!.config/qutebrowser/greasemonkey/
-!.config/qutebrowser/greasemonkey/sb.user.js
-!.config/qutebrowser/greasemonkey/yt-ads.js
-!.config/qutebrowser/styles
-!.config/qutebrowser/styles/black.css
 !.config/readline/
 !.config/readline/inputrc
 !.config/river/

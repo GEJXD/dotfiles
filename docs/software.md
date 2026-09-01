@@ -51,20 +51,19 @@
 | lf              | 终端文件管理器                        | `.config/lf/`（`lfrc`、`rifle.conf`、`scope.sh` 等）              |
 
 配置方式：
-- **foot**：`foot.ini` 为 ini 格式，可 `include` 其他文件；字体、滚回行数、URL 启动器（默认 `qutebrowser`）都在这里。
+- **foot**：`foot.ini` 为 ini 格式，可 `include` 其他文件；字体、滚回行数、URL 启动器（默认 `firefox`）都在这里。
 - **nvim**：NvChad 结构，插件由 lazy.nvim 管理，`lazy-lock.json` 锁定版本；运行时数据（插件本体）在 `~/.local/share/nvim`，不纳入仓库。
 
 ---
 
 ## 浏览器
 
-| 软件        | 作用                       | 配置文件                                                             |
-|-------------|----------------------------|----------------------------------------------------------------------|
-| qutebrowser | 键盘驱动浏览器（vim 风格） | `.config/qutebrowser/`（`config.py`、`bindings.py`、`colors.py` 等） |
-| firefox     | 默认浏览器（Wayland）      | 用户配置在 `~/.mozilla`（不纳入仓库）                                |
+| 软件    | 作用                  | 配置文件                                          |
+|---------|-----------------------|---------------------------------------------------|
+| firefox | 默认浏览器（Wayland） | 用户配置在 `~/.mozilla`（不纳入仓库）              |
 
-- `BROWSER=firefox` 定义在 `.config/shell/profile.sh`，qutebrowser 相关脚本不变。
-- `foot.ini` 的 URL 启动器仍用 `qutebrowser`。
+- `BROWSER=firefox` 定义在 `.config/shell/profile.sh`；`url-rifle` 里不是图片/PDF 的链接也落到 firefox。
+- `foot.ini` 的 URL 启动器、sway / kwm 的 `Super+q`、newsboat 的 `macro o` 全部指向 firefox（由 `--base` 安装）。
 
 ---
 
@@ -182,7 +181,6 @@
 | newsboat             | RSS 阅读器            | `.config/newsboat/`        |
 | btop                 | 系统监视器            | `.config/btop/`            |
 | mutt / neomutt       | 邮件客户端            | `.config/mutt/`            |
-| qutebrowser 相关脚本 | qb/qbn/qbp/qbu/qbz    | `.local/bin/`              |
 
 ---
 

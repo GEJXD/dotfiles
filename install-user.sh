@@ -124,9 +124,6 @@ NEWSBOAT="${HOME}/.config/newsboat"
 [ -f "${NEWSBOAT}/proxy.conf" ] || cp ${NEWSBOAT}/proxy.conf{.example,}
 [ -f "${NEWSBOAT}/urls" ] || cp ${NEWSBOAT}/urls{.example,}
 
-QUTEBROWSER="${HOME}/.config/qutebrowser"
-[ -f "${QUTEBROWSER}/proxy.py" ] || cp ${QUTEBROWSER}/proxy.py{.example,}
-
 YTDLP="${HOME}/.config/yt-dlp"
 [ -f "${YTDLP}/proxy.conf" ] || cp ${YTDLP}/proxy.conf{.example,}
 

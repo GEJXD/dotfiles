@@ -32,11 +32,6 @@ augroup neomutt
     autocmd BufRead,BufNewFile /tmp/neomutt-* setlocal cc=80
 augroup END
 
-augroup qutebrowser
-    autocmd!
-    autocmd BufRead,BufNewFile /tmp/qutebrowser-* setlocal filetype=markdown
-augroup END
-
 augroup org
     autocmd!
     autocmd BufRead,BufNewFile *.org setlocal filetype=markdown

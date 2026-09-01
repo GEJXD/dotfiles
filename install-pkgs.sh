@@ -231,6 +231,7 @@ add_base() {
     pkg="$pkg bat"
     pkg="$pkg bc"
     pkg="$pkg cronie"
+    pkg="$pkg firefox"
     pkg="$pkg fzf"
     pkg="$pkg git"
     pkg="$pkg jq"
@@ -532,8 +533,6 @@ add_extra() {
     pkg="$pkg mpd"
     pkg="$pkg mpc"
 
-    pkg="$pkg qutebrowser"
-    pkg="$pkg python-adblock"
 }
 
 

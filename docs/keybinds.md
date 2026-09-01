@@ -324,7 +324,7 @@ river-classic 的 `modes` 与 kwm 的模式基本相同：
 
 配置文件：[`.config/sway/config`](../.config/sway/config)（include colors/bar/autostart/bindings/modes/rules）。
 
-> 与 kwm/river-classic 的主要差异：**`Super+q` 是打开 qutebrowser**（不是关窗口）；截图键是 `Super+y`（不是 `Super+g`）；音频/亮度的 `Super` 与 `Super+Shift` 档位相反。
+> 与 kwm/river-classic 的主要差异：**`Super+q` 是打开 firefox**（不是关窗口）；截图键是 `Super+y`（不是 `Super+g`）；音频/亮度的 `Super` 与 `Super+Shift` 档位相反。
 
 ### 3.1 会话与系统
 
@@ -335,7 +335,7 @@ river-classic 的 `modes` 与 kwm 的模式基本相同：
 | `Super+Shift+w` | 锁屏（`swaylock -f`）                       |
 | `Super+Shift+e` | 休眠（`hibe`）                              |
 | `Super+Shift+i` | 放大镜（`mag`）                             |
-| `Super+q`       | 打开 qutebrowser                            |
+| `Super+q`       | 打开 firefox                                |
 | `Super+Shift+c` | 关闭窗口（kill）                            |
 | `Super+p`       | 启动器                                      |
 | `Super+Return`  | 终端                                        |

@@ -41,7 +41,7 @@ Arch Linux 的个人运行环境。默认栈是 **river 0.5 + kwm** 平铺合成
 | 终端 | foot + footclient（客户端共享服务器，秒开）；abduco + dvtm 做复用 |
 | 编辑器 | neovim + [NvChad](https://nvchad.com)（`lazy-lock.json` 锁版本） |
 | 文件管理 | lf（+ rifle / scope） |
-| 浏览器 | qutebrowser（键盘驱动）· firefox（`BROWSER`） |
+| 浏览器 | firefox（`BROWSER`、foot URL 启动器、`Super+q`） |
 | 菜单 / 选择器 | wmenu（`wmenu-run-color` 配色封装）· fzf |
 | 输入法 | fcitx5 + 拼音（另装 anthy 日文），`Ctrl+Space` 切换 |
 | 音频 | pipewire + wireplumber，OSD 用 wob |
@@ -96,7 +96,7 @@ Arch Linux 的个人运行环境。默认栈是 **river 0.5 + kwm** 平铺合成
 | `.config/kwm/config.zon`、`.config/kwim/config.zon` | 默认栈的绑定、布局、规则、bar、`startup_cmds`；键盘重复率 |
 | `.config/river-classic/` | `init` + `bindings` + `modes` + `rules` + `autostart`，与 kwm 栈并行维护 |
 | `.config/river/init`、`.config/sway/` | river 入口（只拉 kwm 与 FIFO）、备用 sway 配置 |
-| `.config/proxy/` | 各应用代理配置模板的集合（git、newsboat、qutebrowser、ssh、yt-dlp） |
+| `.config/proxy/` | 各应用代理配置模板的集合（git、newsboat、ssh、yt-dlp） |
 | `.config/git/config` | 通过 `include` 引入机器本地的 `user.inc` / `proxy.inc`（不入库） |
 | `.config/mpd/`、`.config/ncmpcpp/` | 音乐守护进程与客户端 |
 | `.config/kanshi/config` | 多显示器 profile（内置屏 2K + HDMI 1080p） |
@@ -184,7 +184,7 @@ cd ~/doc/heart/dotfiles
 
 | 选项 | 内容 | 通道 |
 |---|---|---|
-| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、firejail、ufw、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…） | pacman；`abduco`、`dvtm` 源码 |
+| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、firejail、ufw、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…）、firefox（默认浏览器） | pacman；`abduco`、`dvtm` 源码 |
 | `--yay` | 安装 yay 本身（优先复用 `~/pkg/yay` 里现成的包，否则 clone + `makepkg`）；只要 profile 带 AUR 包，就会在它之前自动构建 | 源码 |
 | `--kwm` | **默认栈**：wayland 基础集 + zig + `wlroots0.20` + scdoc，再源码构建 `river`、`kwim`、`kwm` | pacman + AUR + zig |
 | `--river` | 同上但不装 kwm / kwim | pacman + zig |
@@ -220,7 +220,7 @@ cd ~/doc/heart/dotfiles
 6. **`stow -R --adopt --ignore='^\.ssh'`** 把仓库链接进家目录；`--adopt` 会把已存在的同名文件收编为链接。`~/.ssh` 由 stow 忽略、由 `fix-local-links.sh` 单独处理。
 7. 跑 `fix-local-links.sh`（[§10](#10-私有数据与-gitignore-策略)）。
 8. `chsh -s /usr/bin/zsh`；`systemctl --user enable ssh-agent.service`；有 `gsettings` 则设 `Adwaita-dark`。
-9. 缺就补的私有模板：`~/.ssh/proxy.conf`、`btop.conf`、`git/proxy.inc`、`mutt/account*.muttrc`、`newsboat/{proxy.conf,urls}`、`qutebrowser/proxy.py`、`yt-dlp/proxy.conf`、`isyncrc`（git 身份 `user.inc` 无模板，自己写）。
+9. 缺就补的私有模板：`~/.ssh/proxy.conf`、`btop.conf`、`git/proxy.inc`、`mutt/account*.muttrc`、`newsboat/{proxy.conf,urls}`、`yt-dlp/proxy.conf`、`isyncrc`（git 身份 `user.inc` 无模板，自己写）。
 10. 有 `~/doc/.gpg/gpg-keys` 时用 fzf 挑公钥/私钥导入。
 11. 导入 crontab：优先 `~/.config/crontab.backup`（由 `sync-config` 生成），否则退到 [.config/crontab.example](.config/crontab.example)。
 12. 有 `calcurse` 且日历为空时 `calcurse -i calendar.ical`；刷新 fontconfig 缓存；`setwall` 设壁纸。
@@ -366,7 +366,6 @@ startw                 # 进图形会话
 | 模板 | 目标位置 | 内容 |
 |---|---|---|
 | `.config/git/proxy.inc.example`（另见 `.config/proxy/git/`） | `~/.config/git/proxy.inc` | git 代理；同目录的 `user.inc`（git 身份）**无模板，需手写**，`~/.config/git/config` 会 `include` 两者 |
-| `.config/qutebrowser/proxy.py.example`、`search.py.example` | 同名去掉 `.example` | 浏览器代理 / 搜索引擎账号 |
 | `.config/newsboat/{proxy.conf,urls}.example` | 同目录 | 订阅源与代理 |
 | `.config/yt-dlp/proxy.conf.example` | `~/.config/yt-dlp/proxy.conf` | 下载代理 |
 | `.config/isyncrc.example` | `~/.config/isyncrc` | 邮箱 IMAP/SMTP 账号 |

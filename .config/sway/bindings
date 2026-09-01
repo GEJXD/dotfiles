@@ -15,7 +15,7 @@ bindsym $mod+p      exec $menu
 bindsym $mod+Return exec $term
 bindsym $mod+v      exec "$term -T \"Floating_Term\" -o colors.alpha=0.9 abduco -A dvtm dvtm-status"
 bindsym $mod+r      exec $term lf
-bindsym $mod+q      exec qutebrowser
+bindsym $mod+q      exec firefox
 
 bindsym $mod+minus       exec "${HOME}/.local/bin/audio sink --minus10"
 bindsym $mod+equal       exec "${HOME}/.local/bin/audio sink --plus10"

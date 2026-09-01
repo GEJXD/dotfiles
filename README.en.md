@@ -41,7 +41,7 @@ A personal Arch Linux environment. The default stack is **river 0.5 + kwm**, wit
 | Terminal | foot + footclient (client/server, instant start); abduco + dvtm for tiling sessions |
 | Editor | neovim + [NvChad](https://nvchad.com) (versions pinned in `lazy-lock.json`) |
 | File manager | lf (with rifle / scope) |
-| Browser | qutebrowser (keyboard driven) · firefox (`BROWSER`) |
+| Browser | firefox (`BROWSER`, foot URL launcher, `Super+q`) |
 | Menus / pickers | wmenu (themed through `wmenu-run-color`) · fzf |
 | Input method | fcitx5 + Pinyin (anthy for Japanese), `Ctrl+Space` to toggle |
 | Audio | pipewire + wireplumber, wob for OSD |
@@ -96,7 +96,7 @@ Directories under `.config/` worth calling out:
 | `.config/kwm/config.zon`, `.config/kwim/config.zon` | default stack: bindings, layouts, rules, bar, `startup_cmds`; keyboard repeat rate |
 | `.config/river-classic/` | `init` + `bindings` + `modes` + `rules` + `autostart`, maintained in parallel with the kwm stack |
 | `.config/river/init`, `.config/sway/` | river entry point (only starts kwm and the FIFO), fallback sway config |
-| `.config/proxy/` | collection of per-application proxy templates (git, newsboat, qutebrowser, ssh, yt-dlp) |
+| `.config/proxy/` | collection of per-application proxy templates (git, newsboat, ssh, yt-dlp) |
 | `.config/git/config` | `include`s the machine-local `user.inc` / `proxy.inc` (not tracked) |
 | `.config/mpd/`, `.config/ncmpcpp/` | music daemon and client |
 | `.config/kanshi/config` | monitor profiles (2K internal panel + 1080p HDMI) |
@@ -184,7 +184,7 @@ Without `--install` the script **only prints** the commands it would run, so you
 
 | Option | Contents | Channel |
 |---|---|---|
-| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, firejail, ufw, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…) | pacman; `abduco`, `dvtm` from source |
+| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, firejail, ufw, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…), firefox (the default browser) | pacman; `abduco`, `dvtm` from source |
 | `--yay` | install yay itself (reuses `~/pkg/yay` if present, else clone + `makepkg`); it is built automatically before any profile with AUR packages | source |
 | `--kwm` | **default stack**: wayland base set + zig + `wlroots0.20` + scdoc, then builds `river`, `kwim`, `kwm` from source | pacman + AUR + zig |
 | `--river` | same as above but without kwm / kwim | pacman + zig |
@@ -220,7 +220,7 @@ In order it will:
 6. **`stow -R --adopt --ignore='^\.ssh'`** to link the repo into `$HOME`; `--adopt` converts pre-existing files of the same name into links. `~/.ssh` is ignored by stow and handled by `fix-local-links.sh`.
 7. Run `fix-local-links.sh` ([§10](#10-private-data-and-the-gitignore-policy)).
 8. `chsh -s /usr/bin/zsh`; `systemctl --user enable ssh-agent.service`; set `Adwaita-dark` when `gsettings` exists.
-9. Copy private templates when missing: `~/.ssh/proxy.conf`, `btop.conf`, `git/proxy.inc`, `mutt/account*.muttrc`, `newsboat/{proxy.conf,urls}`, `qutebrowser/proxy.py`, `yt-dlp/proxy.conf`, `isyncrc` (the git identity file `user.inc` has no template — write it yourself).
+9. Copy private templates when missing: `~/.ssh/proxy.conf`, `btop.conf`, `git/proxy.inc`, `mutt/account*.muttrc`, `newsboat/{proxy.conf,urls}`, `yt-dlp/proxy.conf`, `isyncrc` (the git identity file `user.inc` has no template — write it yourself).
 10. Import GPG keys from `~/doc/.gpg/gpg-keys` through an fzf picker, if that directory exists.
 11. Load a crontab: `~/.config/crontab.backup` (written by `sync-config`) if present, otherwise [.config/crontab.example](.config/crontab.example).
 12. Import `calendar.ical` with `calcurse -i` when the calendar is empty; refresh the fontconfig cache; apply the wallpaper with `setwall`.
@@ -366,7 +366,6 @@ Untracked data comes in two flavours:
 | Template | Destination | Contents |
 |---|---|---|
 | `.config/git/proxy.inc.example` (also under `.config/proxy/git/`) | `~/.config/git/proxy.inc` | git proxy; the sibling `user.inc` (git identity) has **no template and must be written by hand** — `~/.config/git/config` `include`s both |
-| `.config/qutebrowser/proxy.py.example`, `search.py.example` | same name without `.example` | browser proxy / search engines |
 | `.config/newsboat/{proxy.conf,urls}.example` | same directory | feeds and proxy |
 | `.config/yt-dlp/proxy.conf.example` | `~/.config/yt-dlp/proxy.conf` | download proxy |
 | `.config/isyncrc.example` | `~/.config/isyncrc` | IMAP/SMTP accounts |

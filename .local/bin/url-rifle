@@ -1,16 +1,13 @@
 #!/usr/bin/sh
 # @author nate zhou
 # @since 2025,2026
-# @depends swayimg nsxiv(xorg) zathura qutebrowser w3m(tty)
+# @depends swayimg nsxiv(xorg) zathura firefox w3m(tty)
 # url - rifle Execuate different open actions based on URL patterns.
 #
 # [Usage]
 # - newsboat:
 #   `browser "~/.local/bin/url-rifle %u"`
 #
-# - qutebrowser:
-#   `config.bind('xl', 'hint links userscript qute-rifle')`
-
 url="$1"
 
 print_err() {
@@ -52,7 +49,7 @@ case "$url" in
             w3m "$url"
         else
             notify-send -u low -t 1100 "$(basename $0)" "Open in browser:\n $url"
-            qutebrowser --target auto --set tabs.show never "$url" &
+            firefox --new-window "$url" &
         fi
         ;;
 esac

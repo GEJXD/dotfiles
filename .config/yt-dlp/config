@@ -5,7 +5,7 @@
 
 --config-locations ~/.config/yt-dlp/proxy.conf
 
---cookies-from-browser chromium:~/.local/share/qutebrowser/
+--cookies-from-browser firefox
 
 --embed-metadata
 
