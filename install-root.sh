@@ -4,10 +4,14 @@
 # Setup system-wide softwares
 #set -x
 
-sudoer="$(grep ':1000:1000:' /etc/passwd | cut -d':' -f1)"
+# install.sh runs this through sudo, so SUDO_USER is the account to configure;
+# the uid 1000 lookup only covers a manual root shell
+sudoer="${SUDO_USER:-}"
+[ "$sudoer" = "root" ] && sudoer=""
+[ -n "$sudoer" ] || sudoer="$(grep ':1000:1000:' /etc/passwd | cut -d':' -f1 | head -1)"
 
 HEART_LOCAL="/home/${sudoer}/doc/heart" # machine-local state around this repository
-script_dir="$(cd $(dirname $0) && pwd)"
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 hostname="$(cat /etc/hostname)"
 ARCH_LIST="${HEART_LOCAL}/package-list/arch-${hostname}.list"
 
@@ -18,6 +22,7 @@ print_err() {
 }
 
 [ ! "$UID" -eq 0 ] && print_err "You must run this script as root." && exit 1
+[ -n "$sudoer" ] || { print_err "Cannot tell which user to configure."; exit 1; }
 
 pacman --noconfirm -Sy && pacman -S --noconfirm --needed archlinux-keyring
 
@@ -30,7 +35,7 @@ pacman -Qi samba >/dev/null 2>&1 && [ -z "$(pdbedit -Lv)" ] \
 grep -q '^kvm:' /etc/group && usermod "$sudoer" -aG kvm
 grep -q '^libvirt:' /etc/group && usermod "$sudoer" -aG libvirt
 grep -q '^termux:' /etc/passwd || useradd -m -G "$sudoer" termux
-sudo -u termux mkdir -m 700 /home/termux/.ssh
+sudo -u termux mkdir -p -m 700 /home/termux/.ssh
 sudo -u termux touch /home/termux/.ssh/authorized_keys
 chmod 750 /home/"$sudoer"
 
@@ -48,23 +53,25 @@ timedatectl set-ntp true
 systemctl enable --now systemd-timesyncd.service
 
 systemctl enable --now sshd.service
-systemctl enable --now systemd-boot-update.service
+systemctl enable --now systemd-boot-update.service 2>/dev/null
 systemctl enable --now bluetooth.service 2>/dev/null
 systemctl enable --now tlp.service 2>/dev/null
 systemctl enable --now smb.service 2>/dev/null
 systemctl enable --now dictd.service 2>/dev/null
 systemctl enable --now cronie.service 2>/dev/null
 
-pacman -Qi libvirt >/dev/null 2>&1 && lscpu | grep -q 'Hypervisor vendor:' \
-    || (systemctl enable --now libvirtd \
+# libvirt only makes sense on bare metal: inside a guest there is no nesting
+if pacman -Qi libvirt >/dev/null 2>&1 && ! lscpu | grep -q 'Hypervisor vendor:'; then
+    systemctl enable --now libvirtd \
         && virsh net-define /etc/libvirt/qemu/networks/default.xml \
-        && virsh net-autostart default)
+        && virsh net-autostart default
+fi
 
 pacman -Qi nvidia-utils > /dev/null 2>&1 \
-    && (systemctl enable nvidia-suspend.service
-        systemctl enable nvidia-hibernate.service
-        systemctl enable nvidia-resume.service
-        systemctl enable nvidia-powerd.service
+    && (systemctl enable nvidia-suspend.service 2>/dev/null
+        systemctl enable nvidia-hibernate.service 2>/dev/null
+        systemctl enable nvidia-resume.service 2>/dev/null
+        systemctl enable nvidia-powerd.service 2>/dev/null
         echo "Nvidia power management service will be enabled after a reboot.")
 
 pacman -Qi seatd > /dev/null 2>&1 \
@@ -75,3 +82,6 @@ systemctl enable --now reflector.timer 2>/dev/null \
     && systemctl start reflector.service
 
 systemctl disable --now paccache.timer
+
+# an optional unit above must not look like a failed run to install.sh
+exit 0
