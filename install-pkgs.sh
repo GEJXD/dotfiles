@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 # @author nate zhou
 # @since 2026
 # Setup packages
@@ -10,7 +10,6 @@ prefix_cmd_pacman="$prefix_cmd_default"
 prefix_cmd_aur="$prefix_cmd_default"
 prefix_cmd_src_make="$prefix_cmd_default"
 prefix_cmd_src_zig="$prefix_cmd_default"
-prefix_cmd_src_meson="$prefix_cmd_default"
 
 linux="linux"
 
@@ -45,6 +44,7 @@ OPTIONS
         --kvm
         --bluetooth
         --coc-java
+        --coding
         --all
 _EOF_
     exit 0
@@ -79,8 +79,11 @@ install_yay() {
         package="$(ls -v ${cache}/yay/yay-[0-9]*.pkg.* 2>/dev/null | tail -1)"
     fi
 
-    [ -f "$package" ] && sudo pacman -U --needed "$package" \
-        || print_err "no built yay package found in ${cache}/yay"
+    [ -f "$package" ] || {
+        print_err "no built yay package found in ${cache}/yay"
+        return 1
+    }
+    sudo pacman -U --needed "$package"
 }
 
 check_src() {
@@ -89,9 +92,10 @@ check_src() {
 
     [ -d "${src_dir}/${package}" ] || {
         mkdir -p "$src_dir"
-        cd "$src_dir"
-        git clone "$repo_url" "$package"
-        cd -
+        git clone "$repo_url" "${src_dir}/${package}" || {
+            print_err "[check_src]: cannot clone $repo_url"
+            return 1
+        }
     }
 }
 
@@ -99,10 +103,11 @@ install_make() {
     src_dir="${HOME}/.local/src"
 
     for package in $src_make; do
-        check_src
-        cd ${src_dir}/${package}
-        sudo make install
-        cd -
+        # a failed clone must never leave 'sudo make install' in another
+        # directory, so every step stops the channel
+        check_src || return 1
+        cd "${src_dir}/${package}" || return 1
+        sudo make install || return 1
     done
 }
 
@@ -111,33 +116,21 @@ install_zig() {
     dotfiles_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
     for package in $src_zig; do
-        check_src
-        cd ${src_dir}/${package}
+        check_src || return 1
+        cd "${src_dir}/${package}" || return 1
         if [ "$package" = "river-classic" ] \
             && [ -f "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch" ] \
             && git apply --check "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch" \
             2>/dev/null; then
             git apply "${dotfiles_dir}/misc/river-classic-wl-shm-v3.patch"
         fi
-        sudo zig build -Doptimize=ReleaseSafe --prefix /usr/local install
-        cd -
-    done
-}
-
-install_meson() {
-    src_dir="${HOME}/.local/src"
-
-    for package in $src_meson; do
-        check_src
-        cd ${src_dir}/${package}
-        meson setup --wipe $build_dir
-        meson compile -C $build_dir
-        sudo meson install -C $build_dir
-        cd -
+        sudo zig build -Doptimize=ReleaseSafe --prefix /usr/local install || return 1
     done
 }
 
 add_linux() {
+    # '--linux' and '--base' both ask for a kernel; only list it once
+    case " $pkg " in *" $linux "*) return ;; esac
     pkg="$pkg $linux"
     pkg="$pkg ${linux}-headers"
 }
@@ -204,6 +197,8 @@ add_base() {
 
     pkg="$pkg openssh"
     pkg="$pkg openbsd-netcat"
+    # every layer of this repository shells out through sudo
+    pkg="$pkg sudo"
 
     pkg="$pkg arch-install-scripts"
     pkg="$pkg dosfstools"
@@ -308,11 +303,14 @@ add_xorg() {
     pkg="$pkg brightnessctl"
     pkg="$pkg libnotify"
 
+    # neither is in the official repositories nor forked upstream, so the AUR
+    # is the only place that builds them (check_src would 404)
+    aur="$aur xob"
+    aur="$aur xbanish"
+
     src_make="$src_make st"
     src_make="$src_make dmenu"
     src_make="$src_make nsxiv"
-    src_make="$src_make xob"
-    src_make="$src_make xbanish"
 }
 
 add_dwm() {
@@ -360,7 +358,8 @@ add_wayland() {
 add_dwl() {
     add_wayland; add_audio; add_fonts; add_themes
 
-    pkg="$pkg $wlroots_dwl"
+    # dwl 0.8 builds against wlroots 0.19, which left extra ages ago
+    aur="$aur $wlroots_dwl"
 
     src_make="$src_make dwl"
 }
@@ -400,13 +399,9 @@ add_kwm() {
 }
 
 add_swayimg() {
-    add_wayland;
+    add_wayland
 
-    pkg="$pkg meson"
-
-    build_dir="_build_dir"
-
-    src_meson="$src_meson swayimg"
+    pkg="$pkg swayimg"
 }
 
 add_media() {
@@ -458,8 +453,8 @@ add_games() {
 add_dict() {
     pkg="$pkg dictd"
 
+    # dict-wm (WordMinder) is gone from the AUR, gcide is the one left
     aur="$aur dict-gcide"
-    aur="$aur dict-wm"
 }
 
 add_mutt() {
@@ -545,11 +540,16 @@ while [ -n "$1" ]; do
             prefix_cmd_aur="yay -S --needed"
             prefix_cmd_src_make="install_make"
             prefix_cmd_src_zig="install_zig"
-            prefix_cmd_src_meson="install_meson"
             ;;
         --linux)
             shift
-            linux="$1"
+            case "$1" in
+                linux*) linux="$1" ;;
+                *)
+                    print_err "[--linux]: expected linux|linux-lts|linux-zen, got '$1'"
+                    exit 1
+                    ;;
+            esac
             add_linux
             ;;
         --base)
@@ -594,6 +594,9 @@ while [ -n "$1" ]; do
         --coc-java)
             add_coc_java
             ;;
+        --coding)
+            add_coding
+            ;;
         --all)
             add_base
             add_dwm
@@ -625,7 +628,7 @@ done
 { [ -n "$aur" ] || [ "$yay" -eq 1 ]; } && {
     echo "AUR: "
     # yay comes from the AUR itself: build it before letting it install anything
-    command -v yay > /dev/null 2>&1 || install_yay
+    command -v yay > /dev/null 2>&1 || install_yay || exit 1
     if [ -n "$aur" ]; then
         $prefix_cmd_aur $aur || exit 1
     fi
@@ -641,12 +644,6 @@ done
 [ -n "$src_zig" ] && {
     echo "Source(zig): "
     $prefix_cmd_src_zig $src_zig || exit 1
-    echo
-}
-
-[ -n "$src_meson" ] && {
-    echo "Source(meson): "
-    $prefix_cmd_src_meson $src_meson || exit 1
     echo
 }
 
