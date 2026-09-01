@@ -63,7 +63,7 @@ export ABDUCO_SOCKET_DIR=$XDG_RUNTIME_DIR # abduco
 
 export QT_QPA_PLATFORMTHEME=qt5ct # qt theme
 export QT_STYLE_OVERRIDE=adwaita-dark # qt theme
-export GTK_THEME=Adwaita-dark # for firejail'ed libreoffice theme
+export GTK_THEME=Adwaita-dark
 
 export _JAVA_AWT_WM_NONREPARENTING=1 # fix java blank window in xwayland-satellite
 

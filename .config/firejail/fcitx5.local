@@ -1,7 +1,0 @@
-# @author nate zhou
-# @since 2023,2024
-
-include blacklist-gpg.local
-include blacklist-common.local
-
-net none

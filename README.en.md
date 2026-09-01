@@ -59,7 +59,7 @@ Written down in [AGENTS.md](AGENTS.md) and actually followed:
 
 - **The repo is the single source of truth.** `git ls-files` is exactly what a fresh install needs to restore. Runtime data, caches and secrets never enter the repo.
 - **Symlinks, not copies.** Every tracked config in `$HOME` is a stow link; `readlink -f` leads straight back here. The few programs that read a checkout directly (kwm) are handled explicitly by `fix-local-links.sh`.
-- **Three install layers, each independently useful.** `install-pkgs.sh` (what to install) → `install-user.sh` (links + user environment) → `install-root.sh` (`/etc`, services, firewall). Nothing blocks anything else, and every layer can print before it acts.
+- **Three install layers, each independently useful.** `install-pkgs.sh` (what to install) → `install-user.sh` (links + user environment) → `install-root.sh` (`/etc`, services). Nothing blocks anything else, and every layer can print before it acts.
 - **Whitelist-style `.gitignore`.** Everything is ignored by default and tracked paths are allow-listed explicitly — so adding a tracked file (especially under `etc/**`) requires a matching `!` rule.
 - **No backward-compatibility layers.** Obsolete paths get deleted, not wrapped in fallbacks or migrations.
 
@@ -74,9 +74,10 @@ Written down in [AGENTS.md](AGENTS.md) and actually followed:
 │   ├── bin/              155 scripts (first in PATH; the directory itself is one symlink)
 │   └── share/            wallpaper.png, nvim runtime skeleton, address book template
 ├── .bashrc .profile .zprofile .zshrc .xinitrc
+├── install.sh            one-shot entry point: runs the three layers below, plans by default
 ├── install-pkgs.sh       packages: role-based profiles, dry-run by default
 ├── install-user.sh       user: directory skeleton, stow, chsh, crontab, templates
-├── install-root.sh       system: /etc + /usr, services, ufw (needs root)
+├── install-root.sh       system: /etc + /usr, services (needs root)
 ├── fix-local-links.sh    re-applies links that must stay machine-local after stow
 ├── etc/                  system config: pacman, systemd, udev, PAM, kernel params…
 ├── usr/                  custom keymap us-custom.map.gz
@@ -153,7 +154,7 @@ Details: [docs/compositors.md](docs/compositors.md) (startup flow, autostart lis
   - **pacman** — official repositories, via `sudo pacman -S --needed`;
   - **AUR** — via `yay` (`--yay` first reuses a package already built in `~/pkg/yay`);
   - **source** — `make` / `zig build` / `meson`, cloned into `~/.local/src`. Sources default to `codeberg.org/unixchad/<pkg>` (`kwim` comes from `github.com/kewuaa/kwim`); each profile pulls in its own build dependencies (`zig`, `scdoc`, `meson`, …).
-- `install-root.sh` touches `/etc`, creates users and changes firewall rules. **Run it only on the intended host, after reading the diff.**
+- `install-root.sh` touches `/etc`, creates users and enables services. **Run it only on the intended host, after reading the diff.**
 
 ---
 
@@ -184,7 +185,7 @@ Without `--install` the script **only prints** the commands it would run, so you
 
 | Option | Contents | Channel |
 |---|---|---|
-| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, firejail, ufw, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…), firefox (the default browser) | pacman; `abduco`, `dvtm` from source |
+| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…), firefox (the default browser) | pacman; `abduco`, `dvtm` from source |
 | `--yay` | install yay itself (reuses `~/pkg/yay` if present, else clone + `makepkg`); it is built automatically before any profile with AUR packages | source |
 | `--kwm` | **default stack**: wayland base set + zig + `wlroots0.20` + scdoc, then builds `river`, `kwim`, `kwm` from source | pacman + AUR + zig |
 | `--river` | same as above but without kwm / kwim | pacman + zig |
@@ -242,10 +243,9 @@ What it does (**destructive — read the script and the diff first**):
 | Filesystem | `chmod 755/644` over `etc/` and `usr/`, then `cp -r --preserve=mode … /` (overwrites same-named system files) |
 | Users / perms | add uid 1000 to `kvm`, `libvirt`; create the `termux` user with `authorized_keys`; tighten `$HOME` to 750; `chmod 400` + `chattr +i` on `/root/cryptkey` if present |
 | Time | `timedatectl set-ntp true` + enable `systemd-timesyncd` |
-| Firewall | `ufw`: allow SSH and CIFS from 192.168.0.0/16, `virbr0` for libvirt, mpd on 8000, `sharepkg` on 8080, then `ufw enable` |
 | Services | `sshd`, `systemd-boot-update`, `bluetooth`, `tlp`, `smb`, `dictd`, `cronie` (skipped when the package is absent); enable `libvirtd` and define/autostart the default network on bare metal; four NVIDIA power services when `nvidia-utils` is installed; `seatd` plus the `seat` group when present |
 | Mirrors / cache | enable `reflector.timer` and refresh the mirrorlist once; disable `paccache.timer` (cache is handled by `rmcache` / `sync-pkg` instead) |
-| Other | `smbpasswd -a` when samba is installed with no users; `firecfg` to recreate firejail symlinks |
+| Other | `smbpasswd -a` when samba is installed with no users |
 
 ### 5.5 After installation
 
@@ -390,7 +390,7 @@ Multiple machines (including a `termux` user pulling data) stay in sync through 
 |---|---|---|
 | `sync-config` | host → repo | writes `package-list/{arch,aur,code}-<hostname>.list`, backs up the crontab to `~/.config/crontab.backup`, redacts the address book for screen casting |
 | `sync-config-cron` | throttle | runs `sync-config` at most once per 12h, called every 15 min by cron |
-| `sync-config-sys` | `/etc` → repo | pulls tracked system files back for commit (`pacman.conf`, `mirrorlist`, hooks, `xdg/reflector/reflector.conf`, ufw rules, `tlp.conf`, …) |
+| `sync-config-sys` | `/etc` → repo | pulls tracked system files back for commit (`pacman.conf`, `mirrorlist`, hooks, `xdg/reflector/reflector.conf`, `tlp.conf`, …) |
 | `sync-config-root` | repo → `/root/heart` | mirrors the shell / lf / fzf / vim setup for root |
 | `sync-pkg` / `-cron` / `-reverse` | package pool ⇄ `~/pkg/pacman` | pacman cache mirror, weekly; pairs with `sharepkg` as a LAN HTTP repo |
 | `sync-data` | `~/{doc,mus,pic,vid,pkg}` → `/data/` | cold backup to the local bulk disk |
@@ -423,14 +423,14 @@ readlink -f ~/.config/kwm/config.zon ~/.local/share/wallpaper ~/mus/.mpdignore
 
 Anything behaviour-related (compositor, keybindings, bar, services) has to be exercised in a live session, and the matching `docs/` file updated.
 
-Commit convention (consistent with the 2700+ commits in history): Conventional Commits, short imperative subject, scope where useful — `feat(input): …`, `fix(bar): …`, `docs: …`, `chore(foot): …`. One change per commit; when `/etc`, services or firewall rules are involved, name the affected system components in the body.
+Commit convention (consistent with the 2700+ commits in history): Conventional Commits, short imperative subject, scope where useful — `feat(input): …`, `fix(bar): …`, `docs: …`, `chore(foot): …`. One change per commit; when `/etc` or services are involved, name the affected system components in the body.
 
 ---
 
 ## 13. Known issues
 
 - reflector replaces the mirrorlist, so ALA lines are lost ([§7.1](#71-mirrors-are-managed-by-reflector)).
-- `install-root.sh` creates a `termux` user and opens firewall ports — it is written for one specific network topology; audit every item on a new environment.
+- `install-root.sh` creates a `termux` user — it is written for one specific machine; audit every item on a new environment.
 - Startup troubleshooting (blank bar, FIFO, the portal error that breaks Electron file pickers, kwm `execve failed`) lives in [docs/compositors.md](docs/compositors.md).
 
 ---

@@ -1,6 +1,0 @@
-# @author nate zhou
-# @since 2023,2024
-
-noblacklist ${HOME}/virt
-include blacklist-common.local
-include blacklist-gpg.local

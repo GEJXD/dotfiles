@@ -118,7 +118,7 @@ case "$(file -Lb --mime-type -- "$1")" in
                 show_img "$1" "$2" "$3"
                 ;;
             *)
-                firejail --net=none w3m "$1"
+                w3m "$1"
                 ;;
         esac
         ;;

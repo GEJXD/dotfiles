@@ -217,9 +217,6 @@ add_base() {
     pkg="$pkg neovim"
     pkg="$pkg nodejs"
 
-    pkg="$pkg firejail"
-    pkg="$pkg ufw"
-
     pkg="$pkg btop"
     pkg="$pkg nvtop"
     pkg="$pkg ncdu"

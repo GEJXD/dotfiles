@@ -28,8 +28,6 @@ package-list
 !boot/loader/entries/arch.conf.example
 !boot/loader/entries/arch-fallback.conf.example
 !etc/
-!etc/firejail/
-!etc/firejail/*
 !etc/fwupd/
 !etc/fwupd/fwupd.conf
 !etc/libvirt/
@@ -148,8 +146,6 @@ package-list
 !.config/fcitx5/conf/anthy.conf
 !.config/fcitx5/conf/hangul.conf
 !.config/fcitx5/conf/classicui.conf
-!.config/firejail
-!.config/firejail/*
 !.config/foot/
 !.config/foot/foot.ini
 !.config/foot/bindings.ini

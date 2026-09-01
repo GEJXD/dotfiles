@@ -47,20 +47,6 @@ cp -r --preserve=mode ${script_dir}/{etc,usr} /
 timedatectl set-ntp true
 systemctl enable --now systemd-timesyncd.service
 
-command -v ufw > /dev/null \
-&& (ufw allow from 192.168.0.0/16 to any app SSH
-    ufw allow from 192.168.0.0/16 to any app CIFS
-    pacman -Qi libvirt >/dev/null 2>&1 \
-        && ufw allow in on virbr0 from any to any
-    command -v mpd > /dev/null \
-        && ufw allow from 192.168.0.0/16 to any port 8000 \
-               comment "mpd http stream"
-    ufw allow from 192.168.0.0/16 to any port 8080 comment "sharepkg http"
-    ufw enable
-    systemctl enable --now ufw.service)
-
-firecfg >/dev/null 2>/dev/null && echo "firejail symlink created"
-
 systemctl enable --now sshd.service
 systemctl enable --now systemd-boot-update.service
 systemctl enable --now bluetooth.service 2>/dev/null

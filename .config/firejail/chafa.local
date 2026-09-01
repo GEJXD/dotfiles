@@ -1,8 +1,0 @@
-# @author nate zhou
-# @since 2025
-
-# whitelist lf cache dir
-noblacklist ${HOME}/.cache
-noblacklist ${HOME}/.cache/lf
-
-net none

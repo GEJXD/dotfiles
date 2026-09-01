@@ -33,7 +33,6 @@ https://github.com/dunst-project/dunst/releases.atom ~dunst gui
 https://github.com/mpv-player/mpv/releases.atom ~mpv git gui
 https://github.com/artemsen/swayimg/releases.atom ~swayimg git gui
 
-https://github.com/netblue30/firejail/releases.atom ~firejail git cli sys
 https://codeberg.org/dnkl/foot/releases.rss ~foot git gui wlroots
 https://github.com/gokcehan/lf/releases.atom ~lf git tui
 https://github.com/neomutt/neomutt/releases.atom ~neomutt tui

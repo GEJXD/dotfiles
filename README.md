@@ -59,7 +59,7 @@ Arch Linux 的个人运行环境。默认栈是 **river 0.5 + kwm** 平铺合成
 
 - **仓库是唯一事实来源**。`git ls-files` 列出的东西 = 重装系统后能恢复的全部配置；运行时数据、缓存、私钥一律不入库。
 - **符号链接而非拷贝**。家目录里的配置全是 stow 建出来的链接，`readlink -f` 一步追回仓库；`kwm` 这种「运行时直接读仓库副本」的例外由 `fix-local-links.sh` 明确处理。
-- **三层安装，逐层可用**。`install-pkgs.sh`（装什么包）→ `install-user.sh`（链接 + 用户环境）→ `install-root.sh`（`/etc`、服务、防火墙）。每层互不阻塞，都支持先看后动。
+- **三层安装，逐层可用**。`install-pkgs.sh`（装什么包）→ `install-user.sh`（链接 + 用户环境）→ `install-root.sh`（`/etc`、服务）。每层互不阻塞，都支持先看后动。
 - **白名单式 `.gitignore`**。默认忽略一切，显式放行受管文件——所以新增系统配置必须同时改 `.gitignore`，否则不会入库。
 - **不留向后兼容层**。路径废弃就删，不加 fallback、不做迁移脚本。
 
@@ -74,9 +74,10 @@ Arch Linux 的个人运行环境。默认栈是 **river 0.5 + kwm** 平铺合成
 │   ├── bin/              155 个自写脚本（PATH 首位，整个目录本身就是一个软链接）
 │   └── share/            wallpaper.png、nvim 运行时骨架、address 通讯录
 ├── .bashrc .profile .zprofile .zshrc .xinitrc
+├── install.sh            一键入口：按顺序跑下面三层，默认只打印计划
 ├── install-pkgs.sh       包层：按角色的 profile，默认 dry-run
 ├── install-user.sh       用户层：目录骨架、stow、chsh、crontab、模板落地
-├── install-root.sh       系统层：/etc + /usr 落盘、服务、ufw（需 root）
+├── install-root.sh       系统层：/etc + /usr 落盘、服务（需 root）
 ├── fix-local-links.sh    stow 之后修复必须留在机器本地的链接
 ├── etc/                  系统配置：pacman、systemd、udev、PAM、内核参数……
 ├── usr/                  自定义键盘映射 us-custom.map.gz
@@ -153,7 +154,7 @@ startw dwl              # dwl（X11 工具链）
   - **pacman**：官方仓库包，`sudo pacman -S --needed`；
   - **AUR**：走 `yay`（`--yay` 会先尝试复用 `~/pkg/yay` 里已构建好的包）；
   - **源码**：`make` / `zig build` / `meson`，克隆到 `~/.local/src`。源码包默认来自 `codeberg.org/unixchad/<pkg>`（`kwim` 来自 `github.com/kewuaa/kwim`），需要的构建依赖（`zig`、`scdoc`、`meson` 等）由对应 profile 自己带上。
-- 磁盘外的事：`install-root.sh` 会动 `/etc`、建用户、改防火墙，**只应在目标主机上跑，且先读 diff**。
+- 磁盘外的事：`install-root.sh` 会动 `/etc`、建用户、启用服务，**只应在目标主机上跑，且先读 diff**。
 
 ---
 
@@ -184,7 +185,7 @@ cd ~/doc/heart/dotfiles
 
 | 选项 | 内容 | 通道 |
 |---|---|---|
-| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、firejail、ufw、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…）、firefox（默认浏览器） | pacman；`abduco`、`dvtm` 源码 |
+| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…）、firefox（默认浏览器） | pacman；`abduco`、`dvtm` 源码 |
 | `--yay` | 安装 yay 本身（优先复用 `~/pkg/yay` 里现成的包，否则 clone + `makepkg`）；只要 profile 带 AUR 包，就会在它之前自动构建 | 源码 |
 | `--kwm` | **默认栈**：wayland 基础集 + zig + `wlroots0.20` + scdoc，再源码构建 `river`、`kwim`、`kwm` | pacman + AUR + zig |
 | `--river` | 同上但不装 kwm / kwim | pacman + zig |
@@ -242,10 +243,9 @@ sudo ./install-root.sh
 | 落盘 | `etc/`、`usr/` 统一 `chmod 755/644` 后 `cp -r --preserve=mode … /`（覆盖同名系统文件） |
 | 用户 / 权限 | uid 1000 加入 `kvm`、`libvirt`；创建 `termux` 用户并准备 `authorized_keys`；`~` 收为 750；`/root/cryptkey` 存在则 `400` + `chattr +i` |
 | 时间 | `timedatectl set-ntp true` + 启用 `systemd-timesyncd` |
-| 防火墙 | `ufw`：放行 192.168.0.0/16 的 SSH、CIFS，libvirt 的 `virbr0`，mpd 8000，`sharepkg` 8080，然后 `ufw enable` |
 | 服务 | `sshd`、`systemd-boot-update`、`bluetooth`、`tlp`、`smb`、`dictd`、`cronie`（缺包则跳过）；非虚机时启用 `libvirtd` 并定义/自启 default 网络；装了 `nvidia-utils` 则启用四个 NVIDIA 电源服务；装了 `seatd` 则加 `seat` 组并启用 |
 | 镜像 / 缓存 | 启用 `reflector.timer` 并立即刷新一次 mirrorlist；关闭 `paccache.timer`（缓存由 `rmcache` / `sync-pkg` 手动管） |
-| 其他 | 装 samba 且无用户时 `smbpasswd -a`；`firecfg` 重建 firejail 符号链接 |
+| 其他 | 装 samba 且无用户时 `smbpasswd -a` |
 
 ### 5.5 装完之后
 
@@ -390,7 +390,7 @@ startw                 # 进图形会话
 |---|---|---|
 | `sync-config` | 本机 → 仓库 | 生成 `package-list/{arch,aur,code}-<hostname>.list`、把当前 crontab 备份到 `~/.config/crontab.backup`、给投屏用的通讯录脱敏 |
 | `sync-config-cron` | 节流层 | 12 小时内只跑一次 `sync-config`，由 cron 每 15 分钟敲它 |
-| `sync-config-sys` | `/etc` → 仓库 | 把受管的系统配置（`pacman.conf`、`mirrorlist`、hooks、`xdg/reflector/reflector.conf`、`ufw` 规则、`tlp.conf`…）拉回仓库，供提交 |
+| `sync-config-sys` | `/etc` → 仓库 | 把受管的系统配置（`pacman.conf`、`mirrorlist`、hooks、`xdg/reflector/reflector.conf`、`tlp.conf`…）拉回仓库，供提交 |
 | `sync-config-root` | 仓库 → `/root/heart` | 给 root 也铺一份 shell / lf / fzf / vim 配置 |
 | `sync-pkg` / `-cron` / `-reverse` | 包池 ⇄ `~/pkg/pacman` | pacman 缓存镜像化，7 天一次；配合 `sharepkg` 起局域网 HTTP 源 |
 | `sync-data` | `~/{doc,mus,pic,vid,pkg}` → `/data/` | 冷备到本地大盘 |
@@ -423,14 +423,14 @@ readlink -f ~/.config/kwm/config.zon ~/.local/share/wallpaper ~/mus/.mpdignore
 
 行为相关的改动（合成器、按键、状态栏、服务）要在真实会话里过一遍，并更新 `docs/` 对应文档。
 
-提交规范（沿用现有 2700+ 条历史）：Conventional Commit 短句、祈使语气、必要时带 scope —— `feat(input): …`、`fix(bar): …`、`docs: …`、`chore(foot): …`。一次提交只做一件事；涉及 `/etc`、服务、防火墙时，在正文里点明受影响的主机组件。
+提交规范（沿用现有 2700+ 条历史）：Conventional Commit 短句、祈使语气、必要时带 scope —— `feat(input): …`、`fix(bar): …`、`docs: …`、`chore(foot): …`。一次提交只做一件事；涉及 `/etc`、服务时，在正文里点明受影响的主机组件。
 
 ---
 
 ## 13. 已知问题
 
 - reflector 覆盖 mirrorlist 导致 ALA 行丢失（[§7.1](#71-镜像站由-reflector-托管)）。
-- `install-root.sh` 会创建 `termux` 用户、开防火墙端口，属于「按我家网络拓扑写死」的脚本，换环境请逐项审。
+- `install-root.sh` 会创建 `termux` 用户，属于「按我家机器写死」的脚本，换环境请逐项审。
 - 启动类问题的排查清单（状态栏空白、FIFO、portal 让 Electron 文件选择器报错、kwm `execve failed`）在 [docs/compositors.md](docs/compositors.md#6-常见排查)。
 
 ---
