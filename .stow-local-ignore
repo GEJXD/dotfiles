@@ -12,6 +12,7 @@ install.md
 package-list
 misc
 unixchad.asc
+install.sh
 install-root.sh
 install-user.sh
 install-pkgs.sh

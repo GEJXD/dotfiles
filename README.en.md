@@ -159,21 +159,23 @@ Details: [docs/compositors.md](docs/compositors.md) (startup flow, autostart lis
 
 ## 5. Installation
 
-### 5.1 Bootstrap
-
-Install two packages by hand in the minimal system; everything after this is scripted:
+### 5.1 One command
 
 ```sh
-sudo pacman -S --needed git stow
 git clone git@github.com:GEJXD/dotfiles.git ~/doc/heart/dotfiles
 cd ~/doc/heart/dotfiles
+./install.sh                                          # print what the three layers would do
+./install.sh --install                                # apply, default profiles: --base --yay --kwm --ime
+./install.sh --install --base --river-classic --mutt   # other profiles
 ```
+
+`install.sh` does three things: makes sure `git` / `stow` exist (`pacman -S --needed` otherwise) → runs [5.2](#52-packages-install-pkgssh) / [5.3](#53-user-layer-install-usersh) / [5.4](#54-system-layer-install-rootsh) in order, confirming each layer separately → finishes with the list of private files still left to fill in (opened straight from an fzf picker when available). `--skip-root` leaves `/etc` alone.
 
 The repo lives in `~/doc/heart/dotfiles`. The parent `~/doc/heart/` holds machine-local content (`package-list/`, `.cache/`, `.backup-ssh/`) and does not belong to this repository.
 
 ### 5.2 Packages: `install-pkgs.sh`
 
-Without `--install` the script **only prints** the commands it would run, so you can review any profile combination first.
+Without `--install` the script **only prints** the commands it would run, so you can review any profile combination first (including `--yay`: a preview never builds AUR packages).
 
 ```sh
 ./install-pkgs.sh --base --kwm --ime              # dry run: print only
@@ -182,8 +184,8 @@ Without `--install` the script **only prints** the commands it would run, so you
 
 | Option | Contents | Channel |
 |---|---|---|
-| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, firejail, ufw, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/lf/rsync/samba/stow/tree/zip/w3m…) | pacman; `abduco`, `dvtm` from source |
-| `--yay` | install yay itself (reuses `~/pkg/yay` if present, else clone + `makepkg`) | source |
+| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, firejail, ufw, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…) | pacman; `abduco`, `dvtm` from source |
+| `--yay` | install yay itself (reuses `~/pkg/yay` if present, else clone + `makepkg`); it is built automatically before any profile with AUR packages | source |
 | `--kwm` | **default stack**: wayland base set + zig + `wlroots0.20` + scdoc, then builds `river`, `kwim`, `kwm` from source | pacman + AUR + zig |
 | `--river` | same as above but without kwm / kwim | pacman + zig |
 | `--river-classic` | wayland base set + `wlroots0.20` + `dam` + `river-shifttags` + `river-classic` (applies `misc/river-classic-wl-shm-v3.patch` automatically during the build) | pacman + source + zig |
@@ -200,7 +202,7 @@ Without `--install` the script **only prints** the commands it would run, so you
 | `--all` | combination of most profiles above (dwm + river-classic + kwm side by side) | — |
 | `--linux linux\|linux-lts\|linux-zen` | pick kernel and headers (default `linux`) | — |
 
-`--dwm`, `--dwl`, `--river*` and `--kwm` each pull their audio (pipewire), fonts (Noto set + nerd symbols) and theme dependencies.
+`--dwm`, `--dwl`, `--river*` and `--kwm` each pull their audio (pipewire + `wireplumber` + `pipewire-audio` — without a session manager there is no sound), the common Wayland set (including `xdg-desktop-portal(-wlr)`, which `pick-wl-mirror` and the portal file picker need), fonts (Noto set + nerd symbols) and theme dependencies.
 
 ### 5.3 User layer: `install-user.sh`
 

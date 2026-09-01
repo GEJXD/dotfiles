@@ -13,6 +13,7 @@ package-list
 !misc/
 !misc/*
 !install-*.sh
+!install.sh
 
 !docs/
 !docs/*

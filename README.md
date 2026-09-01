@@ -159,21 +159,23 @@ startw dwl              # dwl（X11 工具链）
 
 ## 5. 安装
 
-### 5.1 引导
-
-最小系统里先手动装两个包，后面全部由脚本接手：
+### 5.1 一条命令
 
 ```sh
-sudo pacman -S --needed git stow
 git clone git@github.com:GEJXD/dotfiles.git ~/doc/heart/dotfiles
 cd ~/doc/heart/dotfiles
+./install.sh                                          # 只打印三层各会做什么
+./install.sh --install                                # 真装，默认 profile：--base --yay --kwm --ime
+./install.sh --install --base --river-classic --mutt   # 换 profile
 ```
+
+`install.sh` 做三件事：确认 `git` / `stow` 就位（缺就 `pacman -S --needed`）→ 依次跑 [5.2](#52-包层install-pkgssh) / [5.3](#53-用户层install-usersh) / [5.4](#54-系统层install-rootsh)，每一层单独确认 → 结尾列出仍需手填的私有文件（装了 `fzf` 就能直接打开）。`--skip-root` 跳过系统层，不碰 `/etc`。装单台机器建议逐层手动跑，方便看清每步。
 
 仓库约定放在 `~/doc/heart/dotfiles`（外层 `~/doc/heart/` 放机器本地内容：`package-list/`、`.cache/`、`.backup-ssh/`，不属本仓库）。
 
 ### 5.2 包层：`install-pkgs.sh`
 
-不带 `--install` 时**只打印**将要执行的命令，可以先把 profile 组合看一眼再动手。
+不带 `--install` 时**只打印**将要执行的命令，可以先把 profile 组合看一眼再动手（包括 `--yay`：预览不会真的去构建 AUR 包）。
 
 ```sh
 ./install-pkgs.sh --base --kwm --ime              # dry-run：只打印
@@ -182,8 +184,8 @@ cd ~/doc/heart/dotfiles
 
 | 选项 | 内容 | 通道 |
 |---|---|---|
-| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、firejail、ufw、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/lf/rsync/samba/stow/tree/zip/w3m…） | pacman；`abduco`、`dvtm` 源码 |
-| `--yay` | 安装 yay 本身（优先复用 `~/pkg/yay` 里现成的包，否则 clone + `makepkg`） | 源码 |
+| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、firejail、ufw、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…） | pacman；`abduco`、`dvtm` 源码 |
+| `--yay` | 安装 yay 本身（优先复用 `~/pkg/yay` 里现成的包，否则 clone + `makepkg`）；只要 profile 带 AUR 包，就会在它之前自动构建 | 源码 |
 | `--kwm` | **默认栈**：wayland 基础集 + zig + `wlroots0.20` + scdoc，再源码构建 `river`、`kwim`、`kwm` | pacman + AUR + zig |
 | `--river` | 同上但不装 kwm / kwim | pacman + zig |
 | `--river-classic` | wayland 基础集 + `wlroots0.20` + `dam` + `river-shifttags` + `river-classic`（构建时自动应用 `misc/river-classic-wl-shm-v3.patch`） | pacman + 源码 + zig |
@@ -200,7 +202,7 @@ cd ~/doc/heart/dotfiles
 | `--all` | 上面大部分 profile 的组合（含 dwm + river-classic + kwm 三套并存） | — |
 | `--linux linux\|linux-lts\|linux-zen` | 指定内核与 headers（默认 `linux`） | — |
 
-`--dwm` / `--dwl` / `--river*` / `--kwm` 都会自动带上各自的音频（pipewire）、字体（Noto 全家桶 + nerd symbols）、主题依赖。
+`--dwm` / `--dwl` / `--river*` / `--kwm` 都会自动带上各自的音频（pipewire + `wireplumber` + `pipewire-audio`，没有 session manager 会没声音）、公共 Wayland 组件（含 `xdg-desktop-portal(-wlr)`，`pick-wl-mirror` 与门户文件选择器依赖它）、字体（Noto 全家桶 + nerd symbols）、主题依赖。
 
 ### 5.3 用户层：`install-user.sh`
 

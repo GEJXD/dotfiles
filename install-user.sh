@@ -84,7 +84,8 @@ mkdir -p ${HOME}/.cache/zig
         )
 
 # stow from this script's own directory, so any checkout works
-stow -R --adopt --ignore='^\.ssh' -d "$script_dir" -t "$HOME" .
+stow -R --adopt --ignore='^\.ssh' -d "$script_dir" -t "$HOME" . \
+    || { print_err "stow failed, the dotfiles are not linked."; exit 1; }
 [ -x "${script_dir}/fix-local-links.sh" ] && "${script_dir}/fix-local-links.sh"
 OLLAMA="${HOME}/pkg/ollama"
 [ -d "$OLLAMA" ] && stow -R --adopt -d "$OLLAMA" -t "$HOME" .
@@ -98,7 +99,10 @@ systemctl enable --user ssh-agent.service
 command -v gsettings > /dev/null && gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 
 SSHCONFIG="${HOME}/.ssh"
-[ -f "${SSHCONFIG}/proxy.conf" ] || cp ${SSHCONFIG}/proxy.conf{.example,}
+mkdir -p "$SSHCONFIG"
+# stow ignores .ssh, so the template still lives inside the repository
+[ -f "${SSHCONFIG}/proxy.conf" ] \
+    || cp "${script_dir}/.ssh/proxy.conf.example" "${SSHCONFIG}/proxy.conf"
 
 BTOP="${HOME}/.config/btop/btop.conf"
 [ -f "$BTOP" ] || cp ${BTOP}.example $BTOP
@@ -158,6 +162,7 @@ command -v fc-cache > /dev/null && [ -f "FONTCONFIG" ] \
 
 ${HOME}/.local/bin/setwall ${script_dir}/.local/share/wallpaper.png &
 
-read -p "sync-config-root?(y/n): " choice; [ "$choice" = "y" ] \
-    || [ "$choice" = "Y"  ] \
-    && ${HOME}/.local/bin/sync-config-root
+read -p "sync-config-root?(y/n): " choice
+case "$choice" in
+    y|Y) "${HOME}/.local/bin/sync-config-root" ;;
+esac

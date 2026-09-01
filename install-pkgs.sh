@@ -14,6 +14,10 @@ prefix_cmd_src_meson="$prefix_cmd_default"
 
 linux="linux"
 
+# '--yay' only asks for the helper itself; it is handled in the execution phase
+# so that the option order no longer matters
+yay=0
+
 wlroots_dwl="wlroots0.19"
 wlroots_river_classic="wlroots0.20"
 wlroots_river="wlroots0.20"
@@ -53,19 +57,30 @@ print_err() {
 }
 
 install_yay() {
+    # Without '--install' this script only plans, but '--yay' used to build and
+    # install right through the dry run.
+    if [ "$prefix_cmd_pacman" = "$prefix_cmd_default" ]; then
+        echo "yay: clone aur/yay into ~/.cache/yay, makepkg, then pacman -U the result"
+        return
+    fi
+
     [ -d ${HOME}/pkg/yay ] && [ ! -L ${HOME}/.cache/yay ] \
         && ln -s ${HOME}/pkg/yay ${HOME}/.cache/yay
 
-    local package="$(ls -v ${HOME}/.cache/yay/yay/yay-[0-9]*.pkg.* | tail -1)"
-    if [ -f "$package" ]; then
-        sudo pacman -U --needed "$package"
-    else
-        mkdir -p ${HOME}/.cache/yay
-        git clone https://aur.archlinux.org/yay.git ${HOME}/.cache/yay/yay
+    local cache="${HOME}/.cache/yay"
+    local package="$(ls -v ${cache}/yay/yay-[0-9]*.pkg.* 2>/dev/null | tail -1)"
+    if [ ! -f "$package" ]; then
+        mkdir -p "$cache"
+        [ -d "${cache}/yay" ] \
+            || git clone https://aur.archlinux.org/yay.git ${cache}/yay
         sudo pacman -S --needed --asdeps go
-        makepkg --dir ${HOME}/.cache/yay/yay
-        sudo pacman -U --needed "$package"
+        makepkg --dir ${cache}/yay
+        # the package file only exists after the build
+        package="$(ls -v ${cache}/yay/yay-[0-9]*.pkg.* 2>/dev/null | tail -1)"
     fi
+
+    [ -f "$package" ] && sudo pacman -U --needed "$package" \
+        || print_err "no built yay package found in ${cache}/yay"
 }
 
 check_src() {
@@ -218,7 +233,11 @@ add_base() {
     pkg="$pkg cronie"
     pkg="$pkg fzf"
     pkg="$pkg git"
+    pkg="$pkg jq"
+    pkg="$pkg less"
     pkg="$pkg lf"
+    pkg="$pkg libcdio"
+    pkg="$pkg poppler"
     pkg="$pkg rsync"
     pkg="$pkg samba"
     pkg="$pkg stow"
@@ -236,6 +255,8 @@ add_audio() {
     pkg="$pkg pipewire-alsa"
     pkg="$pkg pipewire-pulse"
     pkg="$pkg pipewire-jack"
+    pkg="$pkg pipewire-audio"
+    pkg="$pkg wireplumber"
     pkg="$pkg noise-suppression-for-voice"
     pkg="$pkg pulsemixer"
 }
@@ -330,6 +351,8 @@ add_wayland() {
     pkg="$pkg xorg-xwayland"
     pkg="$pkg xwayland-satellite"
     pkg="$pkg brightnessctl"
+    pkg="$pkg xdg-desktop-portal"
+    pkg="$pkg xdg-desktop-portal-wlr"
 
     aur="$aur wshowkeys-mao-git"
     aur="$aur lswt"
@@ -537,7 +560,7 @@ while [ -n "$1" ]; do
             add_base
             ;;
         --yay)
-            install_yay
+            yay=1
             ;;
         --damblocks)
             add_damblocks
@@ -577,7 +600,6 @@ while [ -n "$1" ]; do
             ;;
         --all)
             add_base
-            install_yay
             add_dwm
             add_river_classic
             add_kwm
@@ -600,31 +622,37 @@ done
 
 [ -n "$pkg" ] && {
     echo "pacman: "
-    $prefix_cmd_pacman $pkg
+    $prefix_cmd_pacman $pkg || exit 1
     echo
 }
 
-[ -n "$aur" ] && {
+{ [ -n "$aur" ] || [ "$yay" -eq 1 ]; } && {
     echo "AUR: "
-    command -v yay 2>/dev/null && install_yay
-    $prefix_cmd_aur $aur
+    # yay comes from the AUR itself: build it before letting it install anything
+    command -v yay > /dev/null 2>&1 || install_yay
+    if [ -n "$aur" ]; then
+        $prefix_cmd_aur $aur || exit 1
+    fi
     echo
 }
 
 [ -n "$src_make" ] && {
     echo "Source(make): "
-    $prefix_cmd_src_make $src_make
+    $prefix_cmd_src_make $src_make || exit 1
     echo
 }
 
 [ -n "$src_zig" ] && {
     echo "Source(zig): "
-    $prefix_cmd_src_zig $src_zig
+    $prefix_cmd_src_zig $src_zig || exit 1
     echo
 }
 
 [ -n "$src_meson" ] && {
     echo "Source(meson): "
-    $prefix_cmd_src_meson $src_meson
+    $prefix_cmd_src_meson $src_meson || exit 1
     echo
 }
+
+# an empty channel above must not look like a failed install
+exit 0
