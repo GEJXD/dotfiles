@@ -149,11 +149,11 @@ Details: [docs/compositors.md](docs/compositors.md) (startup flow, autostart lis
 ## 4. Requirements
 
 - Arch Linux (or a derivative that can install Arch packages), with a reasonably fresh `archlinux-keyring`.
-- `install-user.sh` checks for: `git` `stow` `systemctl` `gsettings` `gpg` `fzf`. It exits if any is missing.
+- `install-user.sh` checks for: `git` `stow` `systemctl` `gsettings` `gpg` `fzf`. It exits non-zero if any is missing, which stops `install.sh`.
 - `install-pkgs.sh` uses three channels:
   - **pacman** — official repositories, via `sudo pacman -S --needed`;
-  - **AUR** — via `yay` (`--yay` first reuses a package already built in `~/pkg/yay`);
-  - **source** — `make` / `zig build` / `meson`, cloned into `~/.local/src`. Sources default to `codeberg.org/unixchad/<pkg>` (`kwim` comes from `github.com/kewuaa/kwim`); each profile pulls in its own build dependencies (`zig`, `scdoc`, `meson`, …).
+  - **AUR** — via `yay` (`--yay` first reuses a package already built in `~/pkg/yay`); the X apps that no official repository carries (`xob`, `xbanish`) and the `wlroots0.19` dwl needs are here too;
+  - **source** — `make` / `zig build`, cloned into `~/.local/src`. Sources default to `codeberg.org/unixchad/<pkg>` (`kwim` comes from `github.com/kewuaa/kwim`); each profile pulls in its own build dependencies (`zig`, `scdoc`, …).
 - `install-root.sh` touches `/etc`, creates users and enables services. **Run it only on the intended host, after reading the diff.**
 
 ---
@@ -170,7 +170,7 @@ cd ~/doc/heart/dotfiles
 ./install.sh --install --base --river-classic --mutt   # other profiles
 ```
 
-`install.sh` does three things: makes sure `git` / `stow` exist (`pacman -S --needed` otherwise) → runs [5.2](#52-packages-install-pkgssh) / [5.3](#53-user-layer-install-usersh) / [5.4](#54-system-layer-install-rootsh) in order, confirming each layer separately → finishes with the list of private files still left to fill in (opened straight from an fzf picker when available). `--skip-root` leaves `/etc` alone.
+`install.sh` does three things: makes sure `git` / `stow` / `sudo` exist (`pacman -S --needed` otherwise, preceded by `-Sy` on a host that never synced its databases) → runs [5.2](#52-packages-install-pkgssh) / [5.3](#53-user-layer-install-usersh) / [5.4](#54-system-layer-install-rootsh) in order, confirming each layer separately → finishes with the list of private files still left to fill in (opened straight from an fzf picker when available). `--skip-root` leaves `/etc` alone.
 
 The repo lives in `~/doc/heart/dotfiles`. The parent `~/doc/heart/` holds machine-local content (`package-list/`, `.cache/`, `.backup-ssh/`) and does not belong to this repository.
 
@@ -185,15 +185,15 @@ Without `--install` the script **only prints** the commands it would run, so you
 
 | Option | Contents | Channel |
 |---|---|---|
-| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…), firefox (the default browser) | pacman; `abduco`, `dvtm` from source |
+| `--base` | kernel + headers, ucode chosen from the CPU vendor, GPU driver chosen from `lspci` (NVIDIA → `nvidia-open-dkms`), `base`/`base-devel`, `linux-firmware`, `lvm2`, NetworkManager, man, `zsh`/`dash`, `sbctl`+`efibootmgr`, openssh, `sudo`, arch-install-scripts, `pacman-contrib`/`reflector`/`rebuild-detector`, neovim, nodejs, monitoring set (btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop), common CLI (bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…), firefox (the default browser) | pacman; `abduco`, `dvtm` from source |
 | `--yay` | install yay itself (reuses `~/pkg/yay` if present, else clone + `makepkg`); it is built automatically before any profile with AUR packages | source |
 | `--kwm` | **default stack**: wayland base set + zig + `wlroots0.20` + scdoc, then builds `river`, `kwim`, `kwm` from source | pacman + AUR + zig |
 | `--river` | same as above but without kwm / kwim | pacman + zig |
 | `--river-classic` | wayland base set + `wlroots0.20` + `dam` + `river-shifttags` + `river-classic` (applies `misc/river-classic-wl-shm-v3.patch` automatically during the build) | pacman + source + zig |
-| `--dwl` | wayland base set + `wlroots0.19` + dwl | pacman + source |
-| `--dwm` | X11 stack (xorg, `st`, `dmenu`, `nsxiv`, `xob`, `xbanish`, picom, redshift, clipmenu…) + dwm | pacman + source |
+| `--dwl` | wayland base set + `wlroots0.19` + dwl | AUR + source |
+| `--dwm` | X11 stack (xorg, `st`, `dmenu`, `nsxiv`, picom, redshift, clipmenu…) + dwm, with `xob` and `xbanish` from the AUR | pacman + AUR + source |
 | `--damblocks` | just the status generator | source |
-| `--swayimg` | swayimg | meson |
+| `--swayimg` | swayimg | pacman |
 | `--ime` / `--fcitx5` | fcitx5 + chinese-addons + gtk/qt bridges + anthy + the jade theme | pacman + source |
 | `--mutt` | neomutt, isync, `cyrus-sasl-xoauth2-git` | pacman + AUR |
 | `--kvm` | libvirt, dnsmasq, virt-install, virt-manager, qemu-base + spice set | pacman |
@@ -224,7 +224,7 @@ In order it will:
 9. Copy private templates when missing: `~/.ssh/proxy.conf`, `btop.conf`, `git/proxy.inc`, `mutt/account*.muttrc`, `newsboat/{proxy.conf,urls}`, `yt-dlp/proxy.conf`, `isyncrc` (the git identity file `user.inc` has no template — write it yourself).
 10. Import GPG keys from `~/doc/.gpg/gpg-keys` through an fzf picker, if that directory exists.
 11. Load a crontab: `~/.config/crontab.backup` (written by `sync-config`) if present, otherwise [.config/crontab.example](.config/crontab.example).
-12. Import `calendar.ical` with `calcurse -i` when the calendar is empty; refresh the fontconfig cache; apply the wallpaper with `setwall`.
+12. Import the shipped holiday calendar with `calcurse -i example.ical` when the calendar is empty; refresh the fontconfig cache; apply the wallpaper with `setwall`.
 13. Ask whether to run `sync-config-root` (mirrors the shell setup for root).
 
 A real `~/.bashrc` / `~/.bash_profile` is renamed to `~/.bashrc~` so the link can take its place.
@@ -241,7 +241,7 @@ What it does (**destructive — read the script and the diff first**):
 |---|---|
 | Packages | `pacman -Sy` + refresh `archlinux-keyring`; install from the **per-host list** `~/doc/heart/package-list/arch-$(hostname).list` (generated by `sync-config` from `pacman -Qenq`, kept outside this repo; a missing file only prints an error and the script continues) |
 | Filesystem | `chmod 755/644` over `etc/` and `usr/`, then `cp -r --preserve=mode … /` (overwrites same-named system files) |
-| Users / perms | add uid 1000 to `kvm`, `libvirt`; create the `termux` user with `authorized_keys`; tighten `$HOME` to 750; `chmod 400` + `chattr +i` on `/root/cryptkey` if present |
+| Users / perms | add `$SUDO_USER` (falls back to uid 1000, and the script exits when neither identifies an account) to `kvm`, `libvirt`; create the `termux` user with `authorized_keys`; tighten `$HOME` to 750; `chmod 400` + `chattr +i` on `/root/cryptkey` if present |
 | Time | `timedatectl set-ntp true` + enable `systemd-timesyncd` |
 | Services | `sshd`, `systemd-boot-update`, `bluetooth`, `tlp`, `smb`, `dictd`, `cronie` (skipped when the package is absent); enable `libvirtd` and define/autostart the default network on bare metal; four NVIDIA power services when `nvidia-utils` is installed; `seatd` plus the `seat` group when present |
 | Mirrors / cache | enable `reflector.timer` and refresh the mirrorlist once; disable `paccache.timer` (cache is handled by `rmcache` / `sync-pkg` instead) |

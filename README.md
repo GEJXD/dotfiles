@@ -149,11 +149,11 @@ startw dwl              # dwl（X11 工具链）
 ## 4. 环境要求
 
 - Arch Linux（或足以跑 Arch 包的衍生环境），`archlinux-keyring` 保持较新。
-- 跑 `install-user.sh` 的前置检查会要：`git` `stow` `systemctl` `gsettings` `gpg` `fzf`。缺任何一个都会直接退出。
+- 跑 `install-user.sh` 的前置检查会要：`git` `stow` `systemctl` `gsettings` `gpg` `fzf`。缺任何一个都会以非 0 退出，`install.sh` 随即停下。
 - `install-pkgs.sh` 分三条通道：
   - **pacman**：官方仓库包，`sudo pacman -S --needed`；
-  - **AUR**：走 `yay`（`--yay` 会先尝试复用 `~/pkg/yay` 里已构建好的包）；
-  - **源码**：`make` / `zig build` / `meson`，克隆到 `~/.local/src`。源码包默认来自 `codeberg.org/unixchad/<pkg>`（`kwim` 来自 `github.com/kewuaa/kwim`），需要的构建依赖（`zig`、`scdoc`、`meson` 等）由对应 profile 自己带上。
+  - **AUR**：走 `yay`（`--yay` 会先尝试复用 `~/pkg/yay` 里已构建好的包）；官方仓库没有的 X 端小程序（`xob`、`xbanish`）和 dwl 要用的 `wlroots0.19` 也在这里；
+  - **源码**：`make` / `zig build`，克隆到 `~/.local/src`。源码包默认来自 `codeberg.org/unixchad/<pkg>`（`kwim` 来自 `github.com/kewuaa/kwim`），需要的构建依赖（`zig`、`scdoc` 等）由对应 profile 自己带上。
 - 磁盘外的事：`install-root.sh` 会动 `/etc`、建用户、启用服务，**只应在目标主机上跑，且先读 diff**。
 
 ---
@@ -170,7 +170,7 @@ cd ~/doc/heart/dotfiles
 ./install.sh --install --base --river-classic --mutt   # 换 profile
 ```
 
-`install.sh` 做三件事：确认 `git` / `stow` 就位（缺就 `pacman -S --needed`）→ 依次跑 [5.2](#52-包层install-pkgssh) / [5.3](#53-用户层install-usersh) / [5.4](#54-系统层install-rootsh)，每一层单独确认 → 结尾列出仍需手填的私有文件（装了 `fzf` 就能直接打开）。`--skip-root` 跳过系统层，不碰 `/etc`。装单台机器建议逐层手动跑，方便看清每步。
+`install.sh` 做三件事：确认 `git` / `stow` / `sudo` 就位（缺就 `pacman -S --needed`，数据库从没同步过时先 `-Sy`）→ 依次跑 [5.2](#52-包层install-pkgssh) / [5.3](#53-用户层install-usersh) / [5.4](#54-系统层install-rootsh)，每一层单独确认 → 结尾列出仍需手填的私有文件（装了 `fzf` 就能直接打开）。`--skip-root` 跳过系统层，不碰 `/etc`。装单台机器建议逐层手动跑，方便看清每步。
 
 仓库约定放在 `~/doc/heart/dotfiles`（外层 `~/doc/heart/` 放机器本地内容：`package-list/`、`.cache/`、`.backup-ssh/`，不属本仓库）。
 
@@ -185,15 +185,15 @@ cd ~/doc/heart/dotfiles
 
 | 选项 | 内容 | 通道 |
 |---|---|---|
-| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…）、firefox（默认浏览器） | pacman；`abduco`、`dvtm` 源码 |
+| `--base` | 内核 + headers、按 CPU vendor 选 ucode、按 `lspci` 选 GPU 驱动（NVIDIA → `nvidia-open-dkms`）、`base`/`base-devel`、`linux-firmware`、`lvm2`、NetworkManager、man、`zsh`/`dash`、`sbctl`+`efibootmgr`、openssh、`sudo`、arch-install-scripts、`pacman-contrib`/`reflector`/`rebuild-detector`、neovim、nodejs、监控套件（btop/nvtop/ncdu/smartmontools/sysstat/iftop/powertop）、常用 CLI（bat/fzf/git/jq/less/lf/libcdio/poppler/rsync/samba/stow/tree/zip/w3m…）、firefox（默认浏览器） | pacman；`abduco`、`dvtm` 源码 |
 | `--yay` | 安装 yay 本身（优先复用 `~/pkg/yay` 里现成的包，否则 clone + `makepkg`）；只要 profile 带 AUR 包，就会在它之前自动构建 | 源码 |
 | `--kwm` | **默认栈**：wayland 基础集 + zig + `wlroots0.20` + scdoc，再源码构建 `river`、`kwim`、`kwm` | pacman + AUR + zig |
 | `--river` | 同上但不装 kwm / kwim | pacman + zig |
 | `--river-classic` | wayland 基础集 + `wlroots0.20` + `dam` + `river-shifttags` + `river-classic`（构建时自动应用 `misc/river-classic-wl-shm-v3.patch`） | pacman + 源码 + zig |
-| `--dwl` | wayland 基础集 + `wlroots0.19` + dwl | pacman + 源码 |
-| `--dwm` | X11 栈（xorg、`st`、`dmenu`、`nsxiv`、`xob`、`xbanish`、picom、redshift、clipmenu…）+ dwm | pacman + 源码 |
+| `--dwl` | wayland 基础集 + `wlroots0.19` + dwl | AUR + 源码 |
+| `--dwm` | X11 栈（xorg、`st`、`dmenu`、`nsxiv`、picom、redshift、clipmenu…）+ dwm，`xob`、`xbanish` 走 AUR | pacman + AUR + 源码 |
 | `--damblocks` | 只补状态栏生成器 | 源码 |
-| `--swayimg` | swayimg | meson |
+| `--swayimg` | swayimg | pacman |
 | `--ime` / `--fcitx5` | fcitx5 + chinese-addons + gtk/qt 桥 + anthy + 主题 jade | pacman + 源码 |
 | `--mutt` | neomutt、isync、`cyrus-sasl-xoauth2-git` | pacman + AUR |
 | `--kvm` | libvirt、dnsmasq、virt-install、virt-manager、qemu-base + spice 系列 | pacman |
@@ -224,7 +224,7 @@ cd ~/doc/heart/dotfiles
 9. 缺就补的私有模板：`~/.ssh/proxy.conf`、`btop.conf`、`git/proxy.inc`、`mutt/account*.muttrc`、`newsboat/{proxy.conf,urls}`、`yt-dlp/proxy.conf`、`isyncrc`（git 身份 `user.inc` 无模板，自己写）。
 10. 有 `~/doc/.gpg/gpg-keys` 时用 fzf 挑公钥/私钥导入。
 11. 导入 crontab：优先 `~/.config/crontab.backup`（由 `sync-config` 生成），否则退到 [.config/crontab.example](.config/crontab.example)。
-12. 有 `calcurse` 且日历为空时 `calcurse -i calendar.ical`；刷新 fontconfig 缓存；`setwall` 设壁纸。
+12. 有 `calcurse` 且日历为空时 `calcurse -i example.ical`（导入仓库带的节日）；刷新 fontconfig 缓存；`setwall` 设壁纸。
 13. 询问是否执行 `sync-config-root`（把 shell 配置同步一份给 root）。
 
 `~/.bashrc`、`~/.bash_profile` 若已是真实文件会被改名成 `~/.bashrc~` 再让位给链接。
@@ -241,7 +241,7 @@ sudo ./install-root.sh
 |---|---|
 | 包 | `pacman -Sy` + 更新 `archlinux-keyring`；按**主机清单**安装：`~/doc/heart/package-list/arch-$(hostname).list`（由 `sync-config` 用 `pacman -Qenq` 生成，在本仓库之外；没有该文件只报错、继续执行） |
 | 落盘 | `etc/`、`usr/` 统一 `chmod 755/644` 后 `cp -r --preserve=mode … /`（覆盖同名系统文件） |
-| 用户 / 权限 | uid 1000 加入 `kvm`、`libvirt`；创建 `termux` 用户并准备 `authorized_keys`；`~` 收为 750；`/root/cryptkey` 存在则 `400` + `chattr +i` |
+| 用户 / 权限 | `SUDO_USER`（没有则退到 uid 1000，两者都找不到就直接退出）加入 `kvm`、`libvirt`；创建 `termux` 用户并准备 `authorized_keys`；`~` 收为 750；`/root/cryptkey` 存在则 `400` + `chattr +i` |
 | 时间 | `timedatectl set-ntp true` + 启用 `systemd-timesyncd` |
 | 服务 | `sshd`、`systemd-boot-update`、`bluetooth`、`tlp`、`smb`、`dictd`、`cronie`（缺包则跳过）；非虚机时启用 `libvirtd` 并定义/自启 default 网络；装了 `nvidia-utils` 则启用四个 NVIDIA 电源服务；装了 `seatd` 则加 `seat` 组并启用 |
 | 镜像 / 缓存 | 启用 `reflector.timer` 并立即刷新一次 mirrorlist；关闭 `paccache.timer`（缓存由 `rmcache` / `sync-pkg` 手动管） |
