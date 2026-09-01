@@ -7,7 +7,7 @@
 DEPENDENCIES=("git" "stow" "systemctl" "gsettings" "gpg" "fzf")
 
 HEART_LOCAL="${HOME}/doc/heart" # machine-local state around this repository
-script_dir="$(cd $(dirname $0) && pwd)"
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
 print_err() {
     local RED='\033[0;31m'
@@ -25,7 +25,8 @@ check_dependencies() {
         fi
     done
 
-    [ "$isMissingDependency" -eq 1 ] && exit 0
+    # install.sh stops the whole run on a non-zero exit here
+    [ "$isMissingDependency" -eq 1 ] && exit 1
 }
 
 [ ! -z "$SUDO_USER" ] && print_err "You can't run this script as root." \
@@ -38,7 +39,8 @@ mkdir -p ${HOME}/{dls,doc,mnt,mus,pic,pkg,smb,tmp,vid,.gnupg}
 chmod -f 700 ${HOME}/{doc,mus,pic,vid}/.gpg
 chmod -f 700 ${HOME}/{dls,mnt,tmp}
 chmod -f 755 ${HOME}/pkg
-chmod -f 700 ${HOME}/pkg/{.*,*}
+# 'pkg/.*' would also name pkg/.., i.e. the home directory itself
+find ${HOME}/pkg -mindepth 1 -maxdepth 1 -exec chmod -f 700 {} +
 chmod -f 750 ${HOME}/pkg/fdroid
 chmod -f 705 ${HOME}/pkg/{iso,pacman}
 
@@ -64,11 +66,11 @@ for i in "wttr" "mbsync.cron" "newsboat.num" "checkupdates-cron.log"; do
 done
 
 CITY="${HOME}/.cache/city"
-[ ! -f "$CITY" ] || [ -z "$(cat $CITY)" ] && read -p "Enter your city(for wttr script): " \
+[ ! -f "$CITY" ] || [ -z "$(cat "$CITY")" ] && read -p "Enter your city(for wttr script): " \
     && echo "$REPLY" > "$CITY"
 
 mv ${HOME}/.bash_profile{,~} 2>/dev/null
-[ -L "${HOME}/.bashrc" ] || mv ${HOME}/.bashrc{,~}
+[ -L "${HOME}/.bashrc" ] || mv ${HOME}/.bashrc{,~} 2>/dev/null
 
 [ -d ${HOME}/pkg/yay ] && [ ! -L ${HOME}/.cache/yay ] \
     && ln -s ${HOME}/pkg/yay ${HOME}/.cache/yay
@@ -90,13 +92,21 @@ stow -R --adopt --ignore='^\.ssh' -d "$script_dir" -t "$HOME" . \
 OLLAMA="${HOME}/pkg/ollama"
 [ -d "$OLLAMA" ] && stow -R --adopt -d "$OLLAMA" -t "$HOME" .
 
-[ -x /usr/bin/zsh ] && grep ":${UID}:${GID}:" /etc/passwd  \
-                        | grep -q '/usr/bin/zsh'\
-                    || chsh -s /usr/bin/zsh
+# only switch when zsh is actually there, otherwise nobody can log in again
+if [ -x /usr/bin/zsh ]; then
+    grep ":${UID}:${GID}:" /etc/passwd | grep -q '/usr/bin/zsh' \
+        || chsh -s /usr/bin/zsh
+else
+    print_err "[zsh]: /usr/bin/zsh is missing, keeping the current shell."
+fi
 
-systemctl enable --user ssh-agent.service
+systemctl enable --user ssh-agent.service \
+    || print_err "[systemd]: could not enable the user ssh-agent.service."
 
-command -v gsettings > /dev/null && gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+# the theme key needs the gsettings desktop schemas, not only gsettings itself
+command -v gsettings > /dev/null \
+    && gsettings list-schemas 2>/dev/null | grep -q org.gnome.desktop.interface \
+    && gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 
 SSHCONFIG="${HOME}/.ssh"
 mkdir -p "$SSHCONFIG"
@@ -105,7 +115,7 @@ mkdir -p "$SSHCONFIG"
     || cp "${script_dir}/.ssh/proxy.conf.example" "${SSHCONFIG}/proxy.conf"
 
 BTOP="${HOME}/.config/btop/btop.conf"
-[ -f "$BTOP" ] || cp ${BTOP}.example $BTOP
+[ -f "$BTOP" ] || cp "${BTOP}.example" "$BTOP"
 
 GIT="${HOME}/.config/git"
 [ -f "${GIT}/proxy.inc" ] || cp ${GIT}/proxy.inc{.example,}
@@ -128,33 +138,38 @@ YTDLP="${HOME}/.config/yt-dlp"
 [ -f "${YTDLP}/proxy.conf" ] || cp ${YTDLP}/proxy.conf{.example,}
 
 ISYNC="${HOME}/.config/isyncrc"
-[ -f "$ISYNC" ] || cp ${ISYNC}.example $ISYNC
+[ -f "$ISYNC" ] || cp "${ISYNC}.example" "$ISYNC"
 
+# fzf picks one key at a time; without it, or without keys, nothing is imported
 GPGKEYS="${HOME}/doc/.gpg/gpg-keys"
 chmod 700 "${HOME}/.gnupg"
-[ -d "$GPGKEYS" ] && gpg -q --import $(realpath $(ls ${GPGKEYS}/*.pub \
-    | command fzf --prompt="[gpg]: public key to import")) \
-    && echo "gpg public keys are imported"
-[ -d "$GPGKEYS" ] && gpg -q --import $(realpath $(ls ${GPGKEYS}/*.sec \
-    | command fzf --prompt="[gpg]: private key to import")) \
-    && echo "gpg secret keys are imported"
+if [ -d "$GPGKEYS" ] && command -v fzf > /dev/null; then
+    for extension in pub sec; do
+        key="$(ls "${GPGKEYS}"/*."$extension" 2>/dev/null | command fzf \
+            --prompt="[gpg]: ${extension} key to import")" || continue
+        [ -n "$key" ] && gpg -q --import "$key" \
+            && echo "gpg ${extension} key imported"
+    done
+fi
 
 CRONTAB="${HOME}/.config/crontab.backup"
 [ ! -f "$CRONTAB" ] && CRONTAB="${HOME}/.config/crontab.example"
-command -v crontab > /dev/null && crontab $CRONTAB
+command -v crontab > /dev/null && crontab "$CRONTAB"
 
-CALCURSE_ICAL="${HOME}/.config/calcurse/calendar.ical"
-CALCURSE_APTS="${HOME}/.local/share/calcurse/apts"
+CALCURSE_ICAL="${HOME}/.config/calcurse/example.ical"
+# calcurse picks the data directory through XDG, so the check has to as well
+CALCURSE_APTS="${XDG_DATA_HOME:-${HOME}/.local/share}/calcurse/apts"
 if [ -f "$CALCURSE_ICAL" ] && command -v calcurse > /dev/null; then
-    if [ "$(wc -c < $CALCURSE_APTS)"  -ne 0 ]; then
+    if [ -s "$CALCURSE_APTS" ]; then
         print_err "[calcurse -i]: Already imported file, skipped"
     else
-        calcurse -i $CALCURSE_ICAL || print_err "[calcurse -i]: $CALCURSE_ICAL doesn't exist"
+        # the repository ships holidays only, an empty apts file means first run
+        calcurse -i "$CALCURSE_ICAL" || print_err "[calcurse -i]: $CALCURSE_ICAL doesn't exist"
     fi
 fi
 
 FONTCONFIG="${HOME}/.config/fontconfig/fonts.conf"
-command -v fc-cache > /dev/null && [ -f "FONTCONFIG" ] \
+command -v fc-cache > /dev/null && [ -f "$FONTCONFIG" ] \
     && fc-cache -fv > /dev/null && echo "font cache generated"
 
 ${HOME}/.local/bin/setwall ${script_dir}/.local/share/wallpaper.png &
