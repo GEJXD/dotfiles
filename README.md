@@ -8,6 +8,8 @@ Arch Linux 的个人运行环境。默认栈是 **river 0.5 + kwm** 平铺合成
 
 **规模**：440+ 个受版本控制的文件 · `~/.local/bin` 下 155 个自写脚本 · 60 个应用的 `.config` 目录 · 2700+ commits（自 2025-01）。
 
+> **来源**：本仓库 fork 自 [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles)。上游只是起点——三层安装脚本、kwm / river 栈、脚本层与全部文档都在此基础上借助 LLM 大幅重写，详见 [§15 来源与许可](#15-来源与许可)。
+
 ---
 
 ## 目录
@@ -449,6 +451,6 @@ readlink -f ~/.config/kwm/config.zon ~/.local/share/wallpaper ~/mus/.mpdignore
 
 ## 15. 来源与许可
 
-- 早期从 [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles)（GPL-3.0，上游签名密钥见 [unixchad.asc](unixchad.asc)）fork 并大幅改写；本仓库以 MIT 发布，见 [LICENSE](LICENSE)。上游文件保留其原许可。
+- 早期从 [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles)（GPL-3.0，上游签名密钥见 [unixchad.asc](unixchad.asc)）fork 并大幅改写；重写部分借助 LLM 完成，代码与文档均经过人工审阅。本仓库以 MIT 发布，见 [LICENSE](LICENSE)。上游文件保留其原许可。
 - 状态栏 damblocks、dam、dwm/dwl/st 等源码包默认来自上游作者的 codeberg 仓库（`install-pkgs.sh` 的 `check_src`）。
 - 结构、编码风格与提交约定见 [AGENTS.md](AGENTS.md)，功能文档见 [docs/](docs/README.md)。

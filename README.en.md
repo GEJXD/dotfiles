@@ -8,6 +8,8 @@ A personal Arch Linux environment. The default stack is **river 0.5 + kwm**, wit
 
 **Size**: 440+ tracked files · 155 hand-written scripts in `~/.local/bin` · 60 applications under `.config` · 2700+ commits (since 2025-01).
 
+> **Origin**: forked from [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles). Upstream is only the starting point — the three install layers, the kwm / river stack, the script layer and all of the documentation were rewritten on top of it with heavy LLM assistance. See [§15 Credits and license](#15-credits-and-license).
+
 ---
 
 ## Contents
@@ -449,6 +451,6 @@ Commit convention (consistent with the 2700+ commits in history): Conventional C
 
 ## 15. Credits and license
 
-- Started as a fork of [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles) (GPL-3.0; upstream signing key in [unixchad.asc](unixchad.asc)) and heavily rewritten. This repository is MIT — see [LICENSE](LICENSE); upstream files keep their original license.
+- Started as a fork of [unixchad/dotfiles](https://codeberg.org/unixchad/dotfiles) (GPL-3.0; upstream signing key in [unixchad.asc](unixchad.asc)) and heavily rewritten with LLM assistance, every change reviewed by hand. This repository is MIT — see [LICENSE](LICENSE); upstream files keep their original license.
 - damblocks, dam, dwm/dwl/st and the other source packages default to the upstream author's codeberg repositories (see `check_src` in `install-pkgs.sh`).
 - Structure, coding style and commit rules: [AGENTS.md](AGENTS.md). Feature documentation: [docs/](docs/README.md).
