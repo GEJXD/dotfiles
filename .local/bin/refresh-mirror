@@ -1,0 +1,43 @@
+#!/usr/bin/sh
+# @author nate zhou
+# @since 2026
+# refresh-mirror - rebuild the pacman mirrorlist with reflector
+
+# @depends reflector /etc/xdg/reflector/reflector.conf
+
+conf="/etc/xdg/reflector/reflector.conf"
+mirrorlist="/etc/pacman.d/mirrorlist"
+
+usage() {
+    cat << _EOF_
+USAGE
+        $(basename $0)              rank mirrors, rewrite $mirrorlist
+        $(basename $0) -l,--list    show the mirrors pacman uses now
+        $(basename $0) -t,--test    rank mirrors, print the result, save nothing
+DESCRIPTION
+        Mirrors are selected by $conf, the same file the weekly
+        reflector.timer uses. The ranking step downloads a repository database
+        from every candidate, so it takes a couple of minutes.
+        Everything in $mirrorlist is replaced, including ALA lines from 'ala'.
+_EOF_
+    exit 0
+}
+
+list_mirror() {
+    grep --color=never '^[^#]' "$mirrorlist"
+}
+
+refresh_mirror() {
+    sudo reflector @"$conf" && list_mirror
+}
+
+test_mirror() {
+    reflector @"$conf" --info
+}
+
+case "$1" in
+    "") refresh_mirror ;;
+    -l|--list) list_mirror ;;
+    -t|--test) test_mirror ;;
+    *) usage ;;
+esac

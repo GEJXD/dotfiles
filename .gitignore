@@ -54,6 +54,9 @@ package-list
 !etc/udev/rules.d/
 !etc/udev/rules.d/*
 !etc/vconsole.conf
+!etc/xdg/
+!etc/xdg/reflector/
+!etc/xdg/reflector/reflector.conf
 !usr/
 !usr/local/
 !usr/local/share/

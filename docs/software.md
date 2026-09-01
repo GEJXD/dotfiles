@@ -188,22 +188,23 @@
 
 ## 系统配置（`etc/`）
 
-| 文件                             | 作用                                       |
-|----------------------------------|--------------------------------------------|
-| `etc/systemd/sleep.conf`         | 休眠模式（`HibernateMode=shutdown`）       |
-| `etc/systemd/logind.conf`        | 登录会话设置                               |
-| `etc/default/grub`               | 内核参数（含 `resume=UUID=...` 休眠恢复）  |
-| `etc/mkinitcpio.conf`            | initramfs hooks（含 `sd-encrypt`、`lvm2`） |
-| `etc/pacman.conf`                | 包管理器配置                               |
-| `etc/pacman.d/hooks/*`           | pacman 钩子                                |
-| `etc/modprobe.d/isw-ec_sys.conf` | MSI 笔记本风扇模块参数                     |
-| `etc/pam.d/swaylock`             | 锁屏独立 PAM 策略（避免 faillock 锁账户）  |
-| `etc/pam.d/waylock`              | 旧 waylock 策略（已不再使用）              |
-| `etc/udev/rules.d/*`             | damblocks 相关 udev 规则                   |
-| `etc/vconsole.conf`              | 控制台字体/键位                            |
-| `etc/tlp.conf`                   | 电源管理                                   |
-| `etc/fwupd/fwupd.conf`           | 固件更新                                   |
-| `etc/libvirt/network.conf`       | libvirt 网络                               |
+| 文件                               | 作用                                           |
+|------------------------------------|------------------------------------------------|
+| `etc/systemd/sleep.conf`           | 休眠模式（`HibernateMode=shutdown`）           |
+| `etc/systemd/logind.conf`          | 登录会话设置                                   |
+| `etc/default/grub`                 | 内核参数（含 `resume=UUID=...` 休眠恢复）      |
+| `etc/mkinitcpio.conf`              | initramfs hooks（含 `sd-encrypt`、`lvm2`）     |
+| `etc/pacman.conf`                  | 包管理器配置                                   |
+| `etc/pacman.d/hooks/*`             | pacman 钩子                                    |
+| `etc/xdg/reflector/reflector.conf` | reflector 生成 mirrorlist 的规则（每周 timer） |
+| `etc/modprobe.d/isw-ec_sys.conf`   | MSI 笔记本风扇模块参数                         |
+| `etc/pam.d/swaylock`               | 锁屏独立 PAM 策略（避免 faillock 锁账户）      |
+| `etc/pam.d/waylock`                | 旧 waylock 策略（已不再使用）                  |
+| `etc/udev/rules.d/*`               | damblocks 相关 udev 规则                       |
+| `etc/vconsole.conf`                | 控制台字体/键位                                |
+| `etc/tlp.conf`                     | 电源管理                                       |
+| `etc/fwupd/fwupd.conf`             | 固件更新                                       |
+| `etc/libvirt/network.conf`         | libvirt 网络                                   |
 
 > `etc/` 通过 `install-root.sh` 安装到系统；修改后需重新运行并以 root 权限覆盖目标文件。
 

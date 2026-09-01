@@ -85,4 +85,7 @@ pacman -Qi seatd > /dev/null 2>&1 \
     && usermod -aG seat "$sudoer" \
     && systemctl enable --now seatd.service
 
+systemctl enable --now reflector.timer 2>/dev/null \
+    && systemctl start reflector.service
+
 systemctl disable --now paccache.timer

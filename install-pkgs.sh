@@ -196,6 +196,7 @@ add_base() {
 
     pkg="$pkg archlinux-contrib"
     pkg="$pkg pacman-contrib"
+    pkg="$pkg reflector"
     pkg="$pkg rebuild-detector"
 
     pkg="$pkg neovim"
