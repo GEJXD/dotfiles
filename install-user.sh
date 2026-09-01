@@ -6,9 +6,7 @@
 
 DEPENDENCIES=("git" "stow" "systemctl" "gsettings" "gpg" "fzf")
 
-DOTFILES_REMOTE=("https://codeberg.org/unixchad/dotfiles" \
-                 "https://github.com/gnuunixchad/dotfiles")
-DOTFILES_LOCAL="${HOME}/doc/heart"
+HEART_LOCAL="${HOME}/doc/heart" # machine-local state around this repository
 script_dir="$(cd $(dirname $0) && pwd)"
 
 print_err() {
@@ -57,9 +55,9 @@ touch ${HOME}/.local/state/{bash,zsh}/history
 
 # Make sure files touched by a cronjob for damblocks is a symlink so they can
 # be included by my rsync scripts, so to sync some status to other machines.
-mkdir -p ${HOME}/doc/heart/.cache
+mkdir -p "${HEART_LOCAL}/.cache"
 for i in "wttr" "mbsync.cron" "newsboat.num" "checkupdates-cron.log"; do
-    file="${HOME}/doc/heart/.cache/${i}"
+    file="${HEART_LOCAL}/.cache/${i}"
     if [ ! -e "$file" ]; then
         touch --date='1970-01-01 00:00:00' "$file"
     fi
@@ -68,10 +66,6 @@ done
 CITY="${HOME}/.cache/city"
 [ ! -f "$CITY" ] || [ -z "$(cat $CITY)" ] && read -p "Enter your city(for wttr script): " \
     && echo "$REPLY" > "$CITY"
-
-[ ! -d "$DOTFILES_LOCAL" ] && \
-    git clone "${DOTFILES_REMOTE[1]}" $DOTFILES_LOCAL 2>/dev/null || \
-    git clone "${DOTFILES_REMOTE[2]}" $DOTFILES_LOCAL 2>/dev/null
 
 mv ${HOME}/.bash_profile{,~} 2>/dev/null
 [ -L "${HOME}/.bashrc" ] || mv ${HOME}/.bashrc{,~}
@@ -89,7 +83,7 @@ mkdir -p ${HOME}/.cache/zig
         setfacl -m u:libvirt-qemu:x /data/virt
         )
 
-# use current dir as stow dir, instead of DOTFILES_LOCAL, which may not exist
+# stow from this script's own directory, so any checkout works
 stow -R --adopt --ignore='^\.ssh' -d "$script_dir" -t "$HOME" .
 [ -x "${script_dir}/fix-local-links.sh" ] && "${script_dir}/fix-local-links.sh"
 OLLAMA="${HOME}/pkg/ollama"
@@ -113,7 +107,14 @@ GIT="${HOME}/.config/git"
 [ -f "${GIT}/proxy.inc" ] || cp ${GIT}/proxy.inc{.example,}
 
 MUTT="${HOME}/.config/mutt"
-[ -f "${MUTT}/account*.muttrc" ] || cp ${MUTT}/account.{md,muttrc}
+# muttrc sources account-private/public.muttrc; credentials stay out of the
+# repository, so seed placeholders that point at the account.md example
+for account in private public; do
+    [ -e "${MUTT}/account-${account}.muttrc" ] && continue
+    printf '# add your account here, see account.md in this directory\n' \
+        > "${MUTT}/account-${account}.muttrc"
+    print_err "mutt: created ${MUTT}/account-${account}.muttrc, fill in your credentials"
+done
 
 NEWSBOAT="${HOME}/.config/newsboat"
 [ -f "${NEWSBOAT}/proxy.conf" ] || cp ${NEWSBOAT}/proxy.conf{.example,}
@@ -129,7 +130,7 @@ ISYNC="${HOME}/.config/isyncrc"
 [ -f "$ISYNC" ] || cp ${ISYNC}.example $ISYNC
 
 GPGKEYS="${HOME}/doc/.gpg/gpg-keys"
-chmod 700 ${DOTFILES_LOCAL}/.gnupg
+chmod 700 "${HOME}/.gnupg"
 [ -d "$GPGKEYS" ] && gpg -q --import $(realpath $(ls ${GPGKEYS}/*.pub \
     | command fzf --prompt="[gpg]: public key to import")) \
     && echo "gpg public keys are imported"
