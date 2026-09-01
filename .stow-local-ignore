@@ -8,7 +8,6 @@
 boot
 etc
 usr
-install.md
 package-list
 misc
 unixchad.asc
@@ -16,3 +15,6 @@ install.sh
 install-root.sh
 install-user.sh
 install-pkgs.sh
+fix-local-links.sh
+AGENTS.md
+^/docs$
