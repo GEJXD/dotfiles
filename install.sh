@@ -11,6 +11,8 @@ script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 profiles=()
 install=0
 skip_root=0
+# a failing layer 2/3 must not hide the report at the end
+status=0
 
 print_err() {
     local RED='\033[0;31m'
@@ -45,21 +47,34 @@ confirm() {
     [ "$answer" = "y" ] || [ "$answer" = "Y" ]
 }
 
-# install-user.sh refuses to start without these, and install-pkgs.sh needs git
+# install-pkgs.sh needs git and shells out through sudo, install-user.sh needs stow
 ensure_bootstrap() {
     local missing=()
-    for cmd in git stow; do
+    for cmd in git stow sudo; do
         command -v "$cmd" > /dev/null || missing+=("$cmd")
     done
     [ ${#missing[@]} -eq 0 ] && return
 
-    if confirm "sudo pacman -S --needed ${missing[*]}"; then
-        sudo pacman -S --needed "${missing[@]}"
-    elif [ "$install" -eq 1 ]; then
+    # a host that never synced its databases cannot resolve any target yet
+    local refresh=""
+    [ -e /var/lib/pacman/sync/core.db ] || refresh="-Sy"
+
+    if [ "$install" -eq 0 ]; then
+        echo "would run: sudo pacman $refresh -S --needed ${missing[*]}"
+        return
+    fi
+    if ! command -v sudo > /dev/null; then
+        print_err "there is no sudo yet: run 'pacman -S --needed ${missing[*]}' as root, then re-run this as your own user."
+        exit 1
+    fi
+    if confirm "sudo pacman $refresh -S --needed ${missing[*]}"; then
+        sudo pacman $refresh -S --needed "${missing[@]}" || {
+            print_err "could not install ${missing[*]}"
+            exit 1
+        }
+    else
         print_err "install ${missing[*]} by hand before continuing"
         exit 1
-    else
-        echo "would install: sudo pacman -S --needed ${missing[*]}"
     fi
 }
 
@@ -87,7 +102,7 @@ report_leftovers() {
 
     local keys="$(find "${HOME}/.ssh" -maxdepth 1 -name 'id_*' ! -name '*.pub' -print -quit 2>/dev/null)"
     printf '        [%-2s] %-14s %s\n' "${keys:+ok}" 'ssh keys' \
-        "${HOME}/.ssh/id_* (fix-local-links.sh restores them from ~/doc/heart/.backup-ssh)"
+        "${HOME}/.ssh/id_* (stow never touches .ssh; copy them out of ~/doc/heart/.backup-ssh)"
     printf '        [%-2s] %-14s %s\n' "$([ -s "${HOME}/doc/.gpg/gpg-keys" ] && echo ok)" 'gpg keys' \
         "imported by install-user.sh when ~/doc/.gpg/gpg-keys exists"
     cat << _EOF_
@@ -111,7 +126,7 @@ while [ -n "$1" ]; do
         --install) install=1 ;;
         --skip-root) skip_root=1 ;;
         -h|--help) usage ;;
-        # everything else belongs to install-pkgs.sh, including '--linux lts'
+        # everything else belongs to install-pkgs.sh, including '--linux linux-lts'
         *) profiles+=("$1") ;;
     esac
     shift
@@ -127,14 +142,15 @@ echo "profiles:   ${profiles[*]}"
 
 ensure_bootstrap
 
-if confirm "${script_dir}/install-pkgs.sh ${profiles[*]}"; then
-    "${script_dir}/install-pkgs.sh" --install "${profiles[@]}" || exit 1
-else
+# a declined layer is skipped for good; only a dry run prints the plan
+if [ "$install" -eq 0 ]; then
     "${script_dir}/install-pkgs.sh" "${profiles[@]}"
+elif confirm "${script_dir}/install-pkgs.sh --install ${profiles[*]}"; then
+    "${script_dir}/install-pkgs.sh" --install "${profiles[@]}" || exit 1
 fi
 
 if confirm "${script_dir}/install-user.sh"; then
-    "${script_dir}/install-user.sh" || exit 1
+    "${script_dir}/install-user.sh" || { print_err "install-user.sh failed."; status=1; }
 fi
 
 if [ "$skip_root" -eq 1 ]; then
@@ -142,8 +158,9 @@ if [ "$skip_root" -eq 1 ]; then
 else
     print_err "install-root.sh overwrites files under /etc and enables services."
     if confirm "${script_dir}/install-root.sh"; then
-        sudo "${script_dir}/install-root.sh" || exit 1
+        sudo "${script_dir}/install-root.sh" || { print_err "install-root.sh failed."; status=1; }
     fi
 fi
 
 report_leftovers
+exit "$status"
