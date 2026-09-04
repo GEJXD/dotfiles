@@ -70,12 +70,12 @@ export _JAVA_AWT_WM_NONREPARENTING=1 # fix java blank window in xwayland-satelli
 #export ELECTRON_OZONE_PLATFORM_HINT=wayland # electron
 #export WLR_NO_HARDWARE_CURSORS=1 # external monitor cursor on nvidia
 
-# fcitx
-#export GTK_IM_MODULE=wayland
-#export XMODIFIERS=@im=fcitx
-#export QT_IM_MODULE="wayland;fcitx;ibus"
-
-# ibus
-#export GTK_IM_MODULE=ibus
-#export XMODIFIERS=@im=ibus
-#export QT_IM_MODULE=ibus
+# fcitx5: wayland-native clients go through the compositor's input-method-v2 /
+# text-input-v3 frontend, so GTK_IM_MODULE must stay unset -- when it is set, Gtk3/4
+# fall back to the old im module and fcitx5 pops a "Wayland Diagnose" notification.
+# X11/XWayland clients are covered by XMODIFIERS plus gtk-im-module in the gtk
+# settings files; Qt5 has no text-input-v2 outside kwin, hence QT_IM_MODULE=fcitx.
+export XMODIFIERS=@im=fcitx
+export QT_IM_MODULE=fcitx
+export QT_IM_MODULES="wayland;fcitx" # qt >= 6.7: prefer the wayland frontend
+#export SDL_IM_MODULE=fcitx # sdl2 games running under xwayland
