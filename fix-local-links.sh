@@ -22,6 +22,15 @@ mkdir -p "$HOME/mus"
 mpdignore_target="$(realpath --relative-to="$HOME/mus" "$repo_dir/mus/.mpdignore")"
 ln -sfn "$mpdignore_target" "$HOME/mus/.mpdignore"
 
+# xdg-mime and GTK "set as default" replace mimeapps.list with a regular file,
+# which drops the stow link.
+if [ ! -L "$HOME/.config/mimeapps.list" ]; then
+    mkdir -p "$HOME/.config"
+    rm -f "$HOME/.config/mimeapps.list"
+    mimeapps_target="$(realpath --relative-to="$HOME/.config" "$repo_dir/.config/mimeapps.list")"
+    ln -sfn "$mimeapps_target" "$HOME/.config/mimeapps.list"
+fi
+
 # Keep private SSH keys in a real directory, not under stow.
 if [ -L "$HOME/.ssh" ]; then
     rm -f "$HOME/.ssh"
@@ -47,4 +56,5 @@ fi
 
 echo "local links fixed:"
 readlink -f "$HOME/.config/kwm/config.zon"
+readlink -f "$HOME/.config/mimeapps.list"
 readlink -f "$HOME/.local/share/wallpaper"

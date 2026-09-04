@@ -64,6 +64,7 @@
 
 - `BROWSER=firefox` 定义在 `.config/shell/profile.sh`；`url-rifle` 里不是图片/PDF 的链接也落到 firefox。
 - `foot.ini` 的 URL 启动器、sway / kwm 的 `Super+q`、newsboat 的 `macro o` 全部指向 firefox（由 `--base` 安装）。
+- `.config/mimeapps.list` 是 glib/GTK 的 MIME 默认表（http/https → firefox、PDF → zathura、图片 → swayimg、音视频 → mpv，与 `.local/bin/rifle` 保持一致）。glib 不读 `mimeinfo.cache`，缺这些键时 GTK / Gecko 程序打开链接会报 `Could not launch default application for URI: Operation not supported`。`xdg-mime default` 会用普通文件覆盖该链接，`fix-local-links.sh` 负责重新接回。
 
 ---
 

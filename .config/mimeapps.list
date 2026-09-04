@@ -1,0 +1,42 @@
+# Default applications for the glib/GTK MIME database.
+#
+# glib only reads the Default Applications list here; it ignores the
+# mimeinfo.cache that xdg-mime and xdg-open fall back on. Without these keys
+# g_app_info_launch_default_for_uri() fails with "Operation not supported", so
+# every GTK/Gecko program loses the ability to open a URL, including links
+# clicked inside another application. Keep in sync with .local/bin/rifle.
+[Default Applications]
+
+# Web links.
+text/html=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+
+# Documents.
+application/pdf=org.pwmt.zathura.desktop
+
+# Images (swayimg under Wayland; rifle picks nsxiv on X11).
+image/bmp=swayimg.desktop
+image/gif=swayimg.desktop
+image/jpeg=swayimg.desktop
+image/jxl=swayimg.desktop
+image/png=swayimg.desktop
+image/svg+xml=swayimg.desktop
+image/tiff=swayimg.desktop
+image/webp=swayimg.desktop
+
+# Audio.
+audio/aac=mpv.desktop
+audio/flac=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/ogg=mpv.desktop
+audio/opus=mpv.desktop
+audio/wav=mpv.desktop
+audio/x-m4a=mpv.desktop
+
+# Video.
+video/mp4=mpv.desktop
+video/quicktime=mpv.desktop
+video/webm=mpv.desktop
+video/x-matroska=mpv.desktop
+video/x-msvideo=mpv.desktop

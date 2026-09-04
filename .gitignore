@@ -192,6 +192,7 @@ package-list
 !.config/layout.xkb
 !.config/libvirt/
 !.config/libvirt/libvirt.conf
+!.config/mimeapps.list
 !.config/mpd/
 !.config/mpd/mpd.conf
 !.config/mpd/outputs.conf
