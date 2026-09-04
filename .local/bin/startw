@@ -9,6 +9,12 @@ wc=${1:-kwm}
 
 case "$wc" in
     dwl)
+        # dwl still has no text-input-v3/input-method-v2 support (dwl/dwl#235 is
+        # open), so wayland clients must use the toolkit im module; fcitx5 stays
+        # quiet because its wayland frontend never activates here. dwl autostarts
+        # nothing we own, so start the daemon here too.
+        export GTK_IM_MODULE=fcitx
+        pgrep -x fcitx5 || fcitx5 -d --verbose '*=0'
         tail -f ${XDG_RUNTIME_DIR}/damblocks.fifo | exec ssh-agent dwl
         ;;
     river-classic)
