@@ -9,7 +9,7 @@ require "nvchad.options"
 -- .h 默认按 cpp 识别，因此 .cpp/.hpp/.cc/.h 等都在此范围。
 -- 若项目里有 .editorconfig，其 indent_size 会在之后应用并覆盖这里（项目配置优先）。
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp" },
+  pattern = { "c", "cpp", "cuda" },
   callback = function()
     vim.bo.shiftwidth = 4
     vim.bo.tabstop = 4
