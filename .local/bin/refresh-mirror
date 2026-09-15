@@ -1,24 +1,34 @@
 #!/usr/bin/sh
 # @author nate zhou
 # @since 2026
-# refresh-mirror - rebuild the pacman mirrorlist with reflector
+# refresh-mirror - rebuild the pacman mirrorlist with the fastest China mirrors
 
-# @depends reflector /etc/xdg/reflector/reflector.conf
+# Ranks every reachable mirror in China by real download throughput measured
+# from this machine, and keeps the top ones. The test bypasses any HTTP proxy
+# on purpose: pacman fetches as its own DownloadUser and ignores $http_proxy,
+# so the mirrorlist must be optimized for the direct connection.
 
-conf="/etc/xdg/reflector/reflector.conf"
+country="China"        # candidate pool (reflector --country)
+top_n=5                # mirrors kept in the final mirrorlist
+timeout=10             # seconds per speed measurement
+testfile="extra/os/x86_64/extra.db"   # repo database, a few MB, on every mirror
+
 mirrorlist="/etc/pacman.d/mirrorlist"
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 
 usage() {
     cat << _EOF_
 USAGE
-        $(basename $0)              rank mirrors, rewrite $mirrorlist
+        $(basename $0)              rank mirrors by speed, rewrite $mirrorlist
         $(basename $0) -l,--list    show the mirrors pacman uses now
-        $(basename $0) -t,--test    rank mirrors, print the result, save nothing
+        $(basename $0) -t,--test    rank mirrors by speed, print, save nothing
 DESCRIPTION
-        Mirrors are selected by $conf, the same file the weekly
-        reflector.timer uses. The ranking step downloads a repository database
-        from every candidate, so it takes a couple of minutes.
-        Everything in $mirrorlist is replaced, including ALA lines from 'ala'.
+        Candidates are the https mirrors of $country known to reflector.
+        Each candidate downloads $testfile (capped at ${timeout}s, direct
+        connection) and the fastest $top_n are written to $mirrorlist.
+        reflector.timer keeps regenerating the list weekly using
+        /etc/xdg/reflector/reflector.conf; this script re-ranks it by speed.
 _EOF_
     exit 0
 }
@@ -27,12 +37,75 @@ list_mirror() {
     grep --color=never '^[^#]' "$mirrorlist"
 }
 
+# candidate URLs, one per line:
+#   https://mirrors.example.org/archlinux/$repo/os/$arch
+candidates() {
+    {
+        reflector --country "$country" --protocol https \
+                  --completion-percent 100 --score 20 2>/dev/null |
+            grep '^Server = ' | sed 's/^Server = //'
+        # reflector's status data currently lists BFSU/TUNA as rsync only,
+        # although their https endpoints work fine - add them explicitly
+        printf '%s\n' \
+            'https://mirrors.bfsu.edu.cn/archlinux/$repo/os/$arch' \
+            'https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch'
+    } | sort -u
+}
+
+# print measured throughput in bytes/s for a candidate URL
+speed_of() {
+    url=$(printf '%s' "$1" | sed 's|\$repo/os/\$arch|'"$testfile"'|')
+    curl -s --noproxy '*' -o /dev/null --max-time "$timeout" \
+        -w '%{speed_download}' "$url" 2>/dev/null || echo 0
+    echo
+}
+
+# rank all candidates, print "<speed>|<url>" fastest first
+rank() {
+    candidates > "$tmpdir/cands"
+    [ -s "$tmpdir/cands" ] || { echo "error: reflector returned no candidates" >&2; return 1; }
+
+    i=0
+    while IFS= read -r url; do
+        i=$((i + 1))
+        ( speed_of "$url" > "$tmpdir/s.$i" ) &
+    done < "$tmpdir/cands"
+    wait
+
+    i=0
+    while IFS= read -r url; do
+        i=$((i + 1))
+        s=$(cat "$tmpdir/s.$i" 2>/dev/null)
+        case $s in ''|*[!0-9.eE+-]*) s=0 ;; esac
+        printf '%s|%s\n' "$s" "$url"
+    done < "$tmpdir/cands" | sort -t'|' -gr
+}
+
+show_ranked() {
+    awk -F'|' '{printf "%2d. %7.1f MB/s  %s\n", NR, $1 / 1048576, $2}' "$tmpdir/ranked"
+}
+
 refresh_mirror() {
-    sudo reflector @"$conf" && list_mirror
+    rank > "$tmpdir/ranked" || return 1
+    if awk -F'|' 'NR == 1 { if ($1 + 0 < 1) exit 1 }' "$tmpdir/ranked"; then
+        :
+    else
+        echo "error: no mirror reachable, mirrorlist untouched" >&2
+        return 1
+    fi
+    {
+        printf '# refresh-mirror: top %s of %s mirrors by measured download speed (%s)\n' \
+            "$top_n" "$country" "$(date '+%F %T')"
+        head -n "$top_n" "$tmpdir/ranked" | cut -d'|' -f2- |
+            while IFS= read -r u; do printf 'Server = %s\n' "$u"; done
+    } | sudo tee "$mirrorlist" > /dev/null
+    echo "wrote $mirrorlist:"
+    list_mirror
 }
 
 test_mirror() {
-    reflector @"$conf" --info
+    rank > "$tmpdir/ranked" || return 1
+    show_ranked
 }
 
 case "$1" in
