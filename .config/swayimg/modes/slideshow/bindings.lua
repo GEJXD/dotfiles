@@ -10,26 +10,12 @@ swayimg.slideshow.on_key("q", function()
     swayimg.exit(0)
 end)
 
-is_slideshow_animation_running = true
 local function toggle_slideshow_animation()
-    if is_slideshow_animation_running then
-        swayimg.slideshow.animation_stop()
-        is_slideshow_animation_running = false
-    else
-        swayimg.slideshow.animation_resume()
-        is_slideshow_animation_running = true
-    end
+    swayimg.slideshow.animation = not swayimg.slideshow.animation
 end
 
-local is_antialiasing = true
 local function toggle_antialiasing()
-    if is_antialiasing then
-        swayimg.enable_antialiasing(false)
-        is_antialiasing = false
-    else
-        swayimg.enable_antialiasing(true)
-        is_antialiasing = true
-    end
+    swayimg.antialiasing = not swayimg.antialiasing
 end
 
 local is_slideshow_chessboard = false
@@ -44,16 +30,12 @@ local function toggle_slideshow_chessboard()
 end
 
 local function toggle_text()
-    if swayimg.text.visible() then
-        swayimg.text.hide()
-    else
-        swayimg.text.show()
-    end
+    swayimg.text.visible = not swayimg.text.visible
 end
 
 for n = 1, 9 do
     swayimg.slideshow.on_key(tostring(n), function()
-        swayimg.slideshow.set_timeout(n)
+        swayimg.slideshow.timeout = n
     end)
 end
 
@@ -64,28 +46,26 @@ swayimg.slideshow.on_key("escape", function()
     swayimg.exit(0)
 end)
 swayimg.slideshow.on_key("Ctrl+n", function()
-    swayimg.slideshow.switch_image("next_dir")
+    swayimg.slideshow.open("next_dir")
 end)
 swayimg.slideshow.on_key("Ctrl+p", function()
-    swayimg.slideshow.switch_image("prev_dir")
+    swayimg.slideshow.open("prev_dir")
 end)
 swayimg.slideshow.on_key("return", function()
-    swayimg.set_mode("gallery")
+    swayimg.mode = "gallery"
 end)
 swayimg.slideshow.on_key("s", function()
-    is_viewer_animation_running = true
-    is_slideshow_animation_running = true
-    swayimg.set_mode("viewer")
+    swayimg.mode = "viewer"
 end)
 swayimg.slideshow.on_key("m", toggle_text)
 swayimg.slideshow.on_key("f", function()
-    swayimg.toggle_fullscreen()
+    swayimg.fullscreen = not swayimg.fullscreen
 end)
 swayimg.slideshow.on_key("g", function()
-    swayimg.slideshow.switch_image("first")
+    swayimg.slideshow.open("first")
 end)
 swayimg.slideshow.on_key("Shift+g", function()
-    swayimg.slideshow.switch_image("last")
+    swayimg.slideshow.open("last")
 end)
 swayimg.slideshow.on_key("h", function()
   local wnd = swayimg.get_window_size()
@@ -128,29 +108,30 @@ swayimg.slideshow.on_key("Right", function()
   swayimg.slideshow.set_abs_position(math.floor(pos.x - wnd.width / 10), pos.y);
 end)
 swayimg.slideshow.on_key("i", function()
-    local scale = swayimg.slideshow.get_scale()
-    scale = scale + scale / 10
-    swayimg.slideshow.set_abs_scale(scale);
+    local scale = swayimg.slideshow.scale
+    swayimg.slideshow.scale = scale + scale / 10
 end)
 swayimg.slideshow.on_key("o", function()
-    local scale = swayimg.slideshow.get_scale()
-    scale = scale - scale / 10
-    swayimg.slideshow.set_abs_scale(scale);
+    local scale = swayimg.slideshow.scale
+    swayimg.slideshow.scale = scale - scale / 10
 end)
 swayimg.slideshow.on_key("n", function()
-    swayimg.slideshow.switch_image("next")
+    swayimg.slideshow.open("next")
 end)
 swayimg.slideshow.on_key("p", function()
-    swayimg.slideshow.switch_image("prev")
+    swayimg.slideshow.open("prev")
 end)
 swayimg.slideshow.on_key("z", function()
     swayimg.slideshow.reset()
 end)
 swayimg.slideshow.on_key("comma", function()
-    swayimg.slideshow.prev_frame()
+    local frame = swayimg.slideshow.frame
+    if frame > 0 then
+        swayimg.slideshow.frame = frame - 1
+    end
 end)
 swayimg.slideshow.on_key("period", function()
-    swayimg.slideshow.next_frame()
+    swayimg.slideshow.frame = swayimg.slideshow.frame + 1
 end)
 swayimg.slideshow.on_key("space", toggle_slideshow_animation)
 swayimg.slideshow.on_key("Ctrl+r", function()

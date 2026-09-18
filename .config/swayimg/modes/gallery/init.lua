@@ -5,16 +5,16 @@
 require("modes/gallery/text")
 require("modes/gallery/bindings")
 
-swayimg.gallery.set_selected_scale(1.2)
+swayimg.gallery.selected_scale = 1.2
 
-swayimg.gallery.set_aspect("keep")
+swayimg.gallery.aspect = "keep"
 
-swayimg.gallery.set_thumb_size(200)
-swayimg.gallery.set_border_size(4)
-swayimg.gallery.set_border_color(0xffeeeeee)
+swayimg.gallery.thumb_size = 200
+swayimg.gallery.border_size = 4
+swayimg.gallery.border_color = 0xffeeeeee
 
-swayimg.gallery.set_window_color(0xff111111)
+swayimg.gallery.window_color = 0xff111111
 
-swayimg.gallery.set_mark_color(0xffffffff)
+swayimg.gallery.mark_color = 0xffffffff
 
-swayimg.gallery.enable_preload(true)
+swayimg.gallery.preload = true

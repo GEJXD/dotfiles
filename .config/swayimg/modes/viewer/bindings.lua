@@ -6,26 +6,12 @@ swayimg.viewer.bind_reset()
 
 local functions = require("modes/viewer/functions")
 
-is_viewer_animation_running = true
 local function toggle_viewer_animation()
-    if is_viewer_animation_running then
-        swayimg.viewer.animation_stop()
-        is_viewer_animation_running = false
-    else
-        swayimg.viewer.animation_resume()
-        is_viewer_animation_running = true
-    end
+    swayimg.viewer.animation = not swayimg.viewer.animation
 end
 
-local is_antialiasing = true
 local function toggle_antialiasing()
-    if is_antialiasing then
-        swayimg.enable_antialiasing(false)
-        is_antialiasing = false
-    else
-        swayimg.enable_antialiasing(true)
-        is_antialiasing = true
-    end
+    swayimg.antialiasing = not swayimg.antialiasing
 end
 
 local is_viewer_chessboard = false
@@ -40,11 +26,7 @@ local function toggle_viewer_chessboard()
 end
 
 local function toggle_text()
-    if swayimg.text.visible() then
-        swayimg.text.hide()
-    else
-        swayimg.text.show()
-    end
+    swayimg.text.visible = not swayimg.text.visible
 end
 
 swayimg.viewer.on_key("q", function()
@@ -54,28 +36,26 @@ swayimg.viewer.on_key("escape", function()
     swayimg.exit(0)
 end)
 swayimg.viewer.on_key("Ctrl+n", function()
-    swayimg.viewer.switch_image("next_dir")
+    swayimg.viewer.open("next_dir")
 end)
 swayimg.viewer.on_key("Ctrl+p", function()
-    swayimg.viewer.switch_image("prev_dir")
+    swayimg.viewer.open("prev_dir")
 end)
 swayimg.viewer.on_key("return", function()
-    swayimg.set_mode("gallery")
+    swayimg.mode = "gallery"
 end)
 swayimg.viewer.on_key("s", function()
-    is_slideshow_animation_running = true
-    is_viewer_animation_running = true
-    swayimg.set_mode("slideshow")
+    swayimg.mode = "slideshow"
 end)
 swayimg.viewer.on_key("m", toggle_text)
 swayimg.viewer.on_key("f", function()
-    swayimg.toggle_fullscreen()
+    swayimg.fullscreen = not swayimg.fullscreen
 end)
 swayimg.viewer.on_key("g", function()
-    swayimg.viewer.switch_image("first")
+    swayimg.viewer.open("first")
 end)
 swayimg.viewer.on_key("Shift+g", function()
-    swayimg.viewer.switch_image("last")
+    swayimg.viewer.open("last")
 end)
 swayimg.viewer.on_key("h", function()
     local wnd = swayimg.get_window_size()
@@ -118,29 +98,30 @@ swayimg.viewer.on_key("Right", function()
     swayimg.viewer.set_abs_position(math.floor(pos.x - wnd.width / 10), pos.y);
 end)
 swayimg.viewer.on_key("i", function()
-    local scale = swayimg.viewer.get_scale()
-    scale = scale + scale / 10
-    swayimg.viewer.set_abs_scale(scale);
+    local scale = swayimg.viewer.scale
+    swayimg.viewer.scale = scale + scale / 10
 end)
 swayimg.viewer.on_key("o", function()
-    local scale = swayimg.viewer.get_scale()
-    scale = scale - scale / 10
-    swayimg.viewer.set_abs_scale(scale);
+    local scale = swayimg.viewer.scale
+    swayimg.viewer.scale = scale - scale / 10
 end)
 swayimg.viewer.on_key("n", function()
-    swayimg.viewer.switch_image("next")
+    swayimg.viewer.open("next")
 end)
 swayimg.viewer.on_key("p", function()
-    swayimg.viewer.switch_image("prev")
+    swayimg.viewer.open("prev")
 end)
 swayimg.viewer.on_key("z", function()
     swayimg.viewer.reset()
 end)
 swayimg.viewer.on_key("comma", function()
-    swayimg.viewer.prev_frame()
+    local frame = swayimg.viewer.frame
+    if frame > 0 then
+        swayimg.viewer.frame = frame - 1
+    end
 end)
 swayimg.viewer.on_key("period", function()
-    swayimg.viewer.next_frame()
+    swayimg.viewer.frame = swayimg.viewer.frame + 1
 end)
 swayimg.viewer.on_key("space", toggle_viewer_animation)
 swayimg.viewer.on_key("Ctrl+r", function()
