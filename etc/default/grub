@@ -3,7 +3,7 @@
 GRUB_DEFAULT=saved
 GRUB_TIMEOUT=3
 GRUB_DISTRIBUTOR="Arch"
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=5 nowatchdog nvidia_drm.modeset=1 rd.luks.name=$(blkid -s UUID -o value /dev/nvme1n1p2)=cryptlvm root=/dev/mapper/vg0-root resume=UUID=91e919ba-bbc6-4d18-aa3a-9fc64057abfa"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=5 nowatchdog nvidia_drm.modeset=1 nvme_core.default_ps_max_latency_us=0 pcie_aspm=off rd.luks.name=$(blkid -s UUID -o value /dev/nvme1n1p2)=cryptlvm rd.luks.options=$(blkid -s UUID -o value /dev/nvme1n1p2)=discard root=/dev/mapper/vg0-root resume=UUID=91e919ba-bbc6-4d18-aa3a-9fc64057abfa"
 GRUB_CMDLINE_LINUX=""
 
 # Preload both GPT and MBR modules so that they are not missed
