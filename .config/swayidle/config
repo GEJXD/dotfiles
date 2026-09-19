@@ -9,4 +9,7 @@ timeout 900 'swaylock -f'
 
 timeout 960 'brightnessctl set 0%' resume 'kanshi reload; brightnessctl -r && ${HOME}/.local/bin/bright --no-fifo'
 
+# idle 20min -> suspend, auto hibernate after ~2h (see systemd-sleep)
+timeout 1200 'systemctl suspend-then-hibernate'
+
 before-sleep 'swaylock -f'
