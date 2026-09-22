@@ -31,7 +31,7 @@ case "$url" in
             curl --silent --location "$url" > "$image"
 
             if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-                viewer="swayimg --class='Floating_IMG'"
+                viewer="swayimg --appid='Floating_IMG'"
             elif [ -n "$XAUTHORITY" ]; then
                 viewer="nsxiv --name='Floating_IMG' --no-bar"
             fi

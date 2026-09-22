@@ -4,13 +4,17 @@
 # @depends swaybg xwallpaper(xorg)
 # setwall - set wallpaper
 
-[ ! -d "$1" ] && ln -sf "$(realpath $1)" $HOME/.local/share/wallpaper;
+WALLPAPER="${HOME}/.local/share/wallpaper"
 
-if [ "$XDG_SESSION_TYPE" = "tty" ]; then
-    exit 0
-elif [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+if [ ! -f "$1" ]; then
+    echo "setwall: no such file: $1" >&2
+    exit 1
+fi
+ln -sfn "$(realpath "$1")" "$WALLPAPER"
+
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
     killall swaybg
-    nohup swaybg -i $HOME/.local/share/wallpaper -m fill >/dev/null 2>&1 &
+    nohup swaybg -i "$WALLPAPER" -m fill >/dev/null 2>&1 &
 elif [ -n "$XAUTHORITY" ]; then
-    xwallpaper --zoom ${HOME}/.local/share/wallpaper
+    xwallpaper --zoom "$WALLPAPER"
 fi
