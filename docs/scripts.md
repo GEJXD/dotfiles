@@ -51,7 +51,7 @@
 | `yta` / `ytv`                                      | yt-dlp 下载音频 / 视频  |
 | `rename-dlp` / `rename-lowercase` / `rename-space` | 文件重命名              |
 | `img2vid` / `mediatrim` / `gif`                    | 媒体处理                |
-| `selwall` / `randwall` / `setwall`                 | 壁纸选择 / 随机 / 设置  |
+| `selwall` / `randwall` / `setwall`                 | 壁纸选择 / 随机 / 设置（图片来自 `~/pic/wallpapers/`，`Super+w` 后按 `p` / `r`） |
 
 ## 系统信息 / 更新
 

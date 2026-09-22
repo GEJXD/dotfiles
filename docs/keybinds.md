@@ -179,6 +179,8 @@ kwm 使用模式系统；进入模式后按键交给该模式处理，退出方�
 | `s`  | speaker（切换音频输出）         |
 | `e`  | emoji 选择                      |
 | `j`  | jdoc（openjdk 文档）            |
+| `p`  | selwall（swayimg 画廊选壁纸）   |
+| `r`  | randwall（随机换壁纸）          |
 
 **dunst 模式**（进入 `Super+x`，退出 `x` / `Escape` / `Space`）
 
@@ -314,7 +316,7 @@ kwm 使用模式系统；进入模式后按键交给该模式处理，退出方�
 river-classic 的 `modes` 与 kwm 的模式基本相同：
 
 - **浮动模式**：`Super+Ctrl+f` 进入，`Super+Ctrl+f` / `Escape` / `Space` 退出；`hjkl` 移动、`yuio` 缩放、`Super+Shift+hjkl` 吸附。
-- **wmenu 模式**：`Super+w` 进入；`w/h/b/u/s/e/j` 对应 wiki/heart/books/blue/speaker/emoji/jdoc。
+- **wmenu 模式**：`Super+w` 进入；`w/h/b/u/s/e/j/p/r` 对应 wiki/heart/books/blue/speaker/emoji/jdoc/选壁纸/随机壁纸。
 - **dunst 模式**：`Super+x` 进入；`l/w/c/m/i` 对应 lsupdates/wttr/dcal/lsmus/clip --wipe。
 - **wlrctl 模式**：`Super+/` 进入（先杀 fcitx5）；`hjkl` 移动指针、`Shift+hjkl` 微调、`Ctrl+hjkl` 方向键、`,`/`.` 点击、`n/p` 滚轮、`/` 指针移角落并退出。
 
@@ -415,7 +417,7 @@ river-classic 的 `modes` 与 kwm 的模式基本相同：
 
 ### 3.7 模式
 
-- **wmenu 模式**：`Super+w` 进入；`w/h/b/u/s/e/j` 同 kwm。
+- **wmenu 模式**：`Super+w` 进入；`w/h/b/u/s/e/j/p/r` 同 kwm。
 - **wlrctl 模式**：`Super+/` 进入；绑定与 kwm 相同（用 sway 内置 `seat - cursor` 移动指针）。
 
 ---

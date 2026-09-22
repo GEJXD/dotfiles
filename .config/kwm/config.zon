@@ -88,7 +88,7 @@
                 .{ "lock", "" },
                 .{ "passthrough", "Passthrough" },
                 .{ "floating", "Floating" },
-                .{ "wmenu", "[w]iki [h]eart [b]ooks bl[u]e [s]peaker [e]moji [j]doc" },
+                .{ "wmenu", "[w]iki [h]eart [b]ooks bl[u]e [s]peaker [e]moji [j]doc [p]ic [r]and" },
                 .{ "dunst", "clip-w[i]pe [l]supdates [w]ttr d[c]al ls[m]us" },
                 .{ "wlrctl", "[hjkl]cursors [,]left [.]right [m]iddle ^[hjkl]arrows" },
             },
@@ -765,6 +765,40 @@
                             .group = .{
                                 .actions = .{
                                     .{ .spawn_shell = .{ .cmd = "${HOME}/.local/bin/jdoc" } },
+                                    .{ .switch_mode = .{ .mode = "default" } },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            .{
+                .mode = "wmenu",
+                .keysym = "p",
+                .modifiers = .{},
+                .event = .{
+                    .click = .{
+                        .pressed = .{
+                            .group = .{
+                                .actions = .{
+                                    .{ .spawn_shell = .{ .cmd = "${HOME}/.local/bin/selwall" } },
+                                    .{ .switch_mode = .{ .mode = "default" } },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            .{
+                .mode = "wmenu",
+                .keysym = "r",
+                .modifiers = .{},
+                .event = .{
+                    .click = .{
+                        .pressed = .{
+                            .group = .{
+                                .actions = .{
+                                    .{ .spawn_shell = .{ .cmd = "${HOME}/.local/bin/randwall" } },
                                     .{ .switch_mode = .{ .mode = "default" } },
                                 },
                             },

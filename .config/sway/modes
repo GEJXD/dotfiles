@@ -3,7 +3,7 @@
 # @since 2023,2024,2025,2026
 # .config/sway/modes
 
-set $wmenu "[w]iki [h]eart [b]ooks bl[u]e [s]peaker [e]moji [j]doc"
+set $wmenu "[w]iki [h]eart [b]ooks bl[u]e [s]peaker [e]moji [j]doc [p]ic [r]and"
 set $wlrctl "[hjkl]cursors [,]left [.]right [m]iddle ^[hjkl]arrows"
 
 # wmenu ########################################################################
@@ -20,6 +20,8 @@ mode $wmenu {
     bindsym s mode "default"; exec "${HOME}/.local/bin/speaker"
     bindsym e mode "default"; exec "${HOME}/.local/bin/emoji"
     bindsym j mode "default"; exec "${HOME}/.local/bin/jdoc"
+    bindsym p mode "default"; exec "${HOME}/.local/bin/selwall"
+    bindsym r mode "default"; exec "${HOME}/.local/bin/randwall"
 }
 
 bindsym $mod+slash mode $wlrctl; seat seat0 hide_cursor when-typing disable
