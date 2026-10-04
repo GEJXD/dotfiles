@@ -15,6 +15,8 @@ $map normal None Caps_Lock                  spawn "${HOME}/.local/bin/capslock"
 
 $map normal $mod p                          spawn "$menu"
 $map normal $mod Return                     spawn "$term"
+# kitty 终端（与 foot 并存）：Mod4+Shift+Return 打开
+$map normal ${mod}+Shift Return              spawn "kitty --single-instance"
 $map normal $mod v                          spawn "$term -T \"Floating_Term\" -o colors.alpha=0.9 abduco -A dvtm dvtm-status"
 $map normal $mod r                          spawn "$term sh -c 'sleep 0.03 && lf'"
 $map normal $mod q                          close
