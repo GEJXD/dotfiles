@@ -151,6 +151,10 @@ package-list
 !.config/foot/bindings.ini
 !.config/foot/colors-dark.ini
 !.config/foot/colors-light.ini
+!.config/kitty/
+!.config/kitty/kitty.conf
+!.config/kitty/colors-dark.conf
+!.config/kitty/colors-light.conf
 !.config/fontconfig/
 !.config/fontconfig/fonts.conf
 !.config/fzf/
